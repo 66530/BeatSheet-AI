@@ -26,3 +26,6 @@ assert any(len(b.get("inner_monologues",[])) > 0 for b in result["beats"])
 
 ## 依赖
 PR-06（BaseAgent）, PR-07（SceneSegmentation）
+
+---
+**Status: Submitted** | Branch: `pr/PR-08-screenplay-agent`
