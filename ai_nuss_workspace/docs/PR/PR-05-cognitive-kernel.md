@@ -27,3 +27,6 @@ assert len(result["scenes"]) > 0
 
 ## 依赖
 PR-03（Schemas 层），独立于数据库
+
+---
+**Status: Submitted** | Branch: `pr/PR-05-cognitive-kernel`
