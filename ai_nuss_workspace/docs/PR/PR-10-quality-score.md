@@ -28,3 +28,6 @@ assert q["breakdown"]["visual_action"] > 0
 
 ## 依赖
 PR-07（Scene Segmentation）
+
+---
+**Status: Submitted** | Branch: `pr/PR-10-quality-score`
