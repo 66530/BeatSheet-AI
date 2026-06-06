@@ -1,0 +1,61 @@
+{
+  "novel_id": "NOV_GOLD_001",
+  "gold_standard_beats": [
+    {
+      "beat_id": "GS_B_001",
+      "scene_id": "SC_001_01",
+      "beat_type": "setup",
+      "causality_trigger": "林雨欣独自在正厅等待",
+      "causality_consequence": "林母带着鉴定报告归来"
+    },
+    {
+      "beat_id": "GS_B_002",
+      "scene_id": "SC_001_01",
+      "beat_type": "reveal",
+      "causality_trigger": "林母甩出亲子鉴定报告",
+      "causality_consequence": "林雨欣震惊，世界崩塌"
+    },
+    {
+      "beat_id": "GS_B_003",
+      "scene_id": "SC_001_01",
+      "beat_type": "conflict",
+      "causality_trigger": "林母命令雨欣离开",
+      "causality_consequence": "雨欣内心挣扎与反抗"
+    },
+    {
+      "beat_id": "GS_B_004",
+      "scene_id": "SC_001_02",
+      "beat_type": "setup",
+      "causality_trigger": "雨欣独自坐在花园长椅",
+      "causality_consequence": "陷入对往事的回忆"
+    },
+    {
+      "beat_id": "GS_B_005",
+      "scene_id": "SC_001_02",
+      "beat_type": "flashback_reveal",
+      "causality_trigger": "回忆起初到林府的情景",
+      "causality_consequence": "对比当下处境，痛苦加剧"
+    },
+    {
+      "beat_id": "GS_B_006",
+      "scene_id": "SC_001_02",
+      "beat_type": "decision",
+      "causality_trigger": "独自哭泣后下定决心",
+      "causality_consequence": "决定面对真相并离开"
+    },
+    {
+      "beat_id": "GS_B_007",
+      "scene_id": "SC_001_03",
+      "beat_type": "setup",
+      "causality_trigger": "老王在回廊下观察雨欣",
+      "causality_consequence": "内心产生同情与挣扎"
+    },
+    {
+      "beat_id": "GS_B_008",
+      "scene_id": "SC_001_04",
+      "beat_type": "resolution",
+      "causality_trigger": "雨欣回到卧室收拾行李",
+      "causality_consequence": "为下一章离开林家做铺垫"
+    }
+  ]
+}

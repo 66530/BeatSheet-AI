@@ -1,0 +1,37 @@
+{
+  "novel_id": "NOV_GOLD_001",
+  "title": "真假千金 — Gold Standard v1",
+  "description": "Gold-standard entity resolution mapping for novel 001",
+  "entity_map": {
+    "雨欣": "CH_LIN",
+    "林雨欣": "CH_LIN",
+    "林姑娘": "CH_LIN",
+    "大小姐": "CH_LIN",
+    "林母": "CH_MOTHER",
+    "林夫人": "CH_MOTHER",
+    "母亲": "CH_MOTHER",
+    "老王": "CH_WANG",
+    "王局长": "CH_WANG",
+    "王管家": "CH_WANG"
+  },
+  "master_cast": [
+    {
+      "character_id": "CH_LIN",
+      "canonical_name": "林雨欣",
+      "aliases": ["雨欣", "林雨欣", "林姑娘", "大小姐"],
+      "role": "protagonist"
+    },
+    {
+      "character_id": "CH_MOTHER",
+      "canonical_name": "林母",
+      "aliases": ["林母", "林夫人", "母亲"],
+      "role": "antagonist"
+    },
+    {
+      "character_id": "CH_WANG",
+      "canonical_name": "老王",
+      "aliases": ["老王", "王局长", "王管家"],
+      "role": "supporting"
+    }
+  ]
+}

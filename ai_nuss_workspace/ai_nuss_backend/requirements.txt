@@ -1,0 +1,43 @@
+# AI-NUSS 3.0 — Hard-Locked Dependency List
+# PHASE P0: Cold-start environment (0 API Keys required for boot)
+
+# === Async Web Framework ===
+fastapi==0.115.6
+uvicorn[standard]==0.34.0
+websockets==14.1
+
+# === Database & Async Drivers ===
+sqlalchemy[asyncio]==2.0.36
+asyncpg==0.30.0
+alembic==1.14.1
+redis==5.2.1
+aioredis==2.0.1
+
+# === Vector DB Client (Qdrant) ===
+qdrant-client==1.12.2
+
+# === Data Validation & Serialization ===
+pydantic==2.10.4
+pydantic-settings==2.7.1
+ruamel.yaml==0.18.10
+
+# === LangGraph State Machine ===
+langgraph==0.2.60
+langgraph-checkpoint==2.0.10
+
+# === LLM SDKs (optional — stub_mode safe) ===
+openai==1.59.3
+google-generativeai==0.8.4
+
+# === HTTP Client & Async ===
+httpx==0.28.1
+aiofiles==24.1.0
+python-multipart==0.0.20
+
+# === Testing & Evaluation ===
+pytest==8.3.4
+pytest-asyncio==0.25.0
+
+# === Utilities ===
+python-dotenv==1.0.1
+tenacity==9.0.0

@@ -1,0 +1,66 @@
+{
+  "novel_id": "NOV_GOLD_002",
+  "gold_standard_breakpoints": [18, 52, 78, 105, 142],
+  "scenes": [
+    {
+      "scene_id": "SC_002_01",
+      "scene_number": 1,
+      "metadata": {
+        "location": "INT. 星舰指挥舱",
+        "time_of_day": "——",
+        "timeline_mode": "sequential",
+        "pov_character_id": "CH_ZHAO"
+      },
+      "boundary_line_number": 18,
+      "character_ids": ["CH_ZHAO", "CH_AI", "CH_MAX"]
+    },
+    {
+      "scene_id": "SC_002_02",
+      "scene_number": 2,
+      "metadata": {
+        "location": "INT. 科学实验室",
+        "time_of_day": "——",
+        "timeline_mode": "sequential",
+        "pov_character_id": "CH_AI"
+      },
+      "boundary_line_number": 52,
+      "character_ids": ["CH_AI", "CH_MAX"]
+    },
+    {
+      "scene_id": "SC_002_03",
+      "scene_number": 3,
+      "metadata": {
+        "location": "INT. 军事指挥部",
+        "time_of_day": "——",
+        "timeline_mode": "parallel",
+        "pov_character_id": "CH_LI"
+      },
+      "boundary_line_number": 78,
+      "character_ids": ["CH_LI"]
+    },
+    {
+      "scene_id": "SC_002_04",
+      "scene_number": 4,
+      "metadata": {
+        "location": "EXT. 太空 — 星舰外部",
+        "time_of_day": "——",
+        "timeline_mode": "sequential",
+        "pov_character_id": "CH_ZHAO"
+      },
+      "boundary_line_number": 105,
+      "character_ids": ["CH_ZHAO", "CH_AI"]
+    },
+    {
+      "scene_id": "SC_002_05",
+      "scene_number": 5,
+      "metadata": {
+        "location": "INT. 星舰休息舱",
+        "time_of_day": "——",
+        "timeline_mode": "sequential",
+        "pov_character_id": "CH_ZHAO"
+      },
+      "boundary_line_number": 142,
+      "character_ids": ["CH_ZHAO"]
+    }
+  ]
+}

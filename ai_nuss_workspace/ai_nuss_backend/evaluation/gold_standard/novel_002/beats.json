@@ -1,0 +1,47 @@
+{
+  "novel_id": "NOV_GOLD_002",
+  "gold_standard_beats": [
+    {
+      "beat_id": "GS_B_101",
+      "scene_id": "SC_002_01",
+      "beat_type": "setup",
+      "causality_trigger": "赵舰长在指挥舱收到异常信号",
+      "causality_consequence": "全舰进入警戒状态"
+    },
+    {
+      "beat_id": "GS_B_102",
+      "scene_id": "SC_002_01",
+      "beat_type": "reveal",
+      "causality_trigger": "艾博士分析信号来源",
+      "causality_consequence": "发现是外星文明的求救信号"
+    },
+    {
+      "beat_id": "GS_B_103",
+      "scene_id": "SC_002_02",
+      "beat_type": "conflict",
+      "causality_trigger": "MAX检测到信号中含有加密军事指令",
+      "causality_consequence": "艾博士与赵舰长产生分歧"
+    },
+    {
+      "beat_id": "GS_B_104",
+      "scene_id": "SC_002_03",
+      "beat_type": "reveal",
+      "causality_trigger": "李司令在指挥部下达拦截命令",
+      "causality_consequence": "揭示军方另有图谋"
+    },
+    {
+      "beat_id": "GS_B_105",
+      "scene_id": "SC_002_04",
+      "beat_type": "climax",
+      "causality_trigger": "星舰遭到不明攻击",
+      "causality_consequence": "赵舰长做出关键战术决策"
+    },
+    {
+      "beat_id": "GS_B_106",
+      "scene_id": "SC_002_05",
+      "beat_type": "resolution",
+      "causality_trigger": "战后赵舰长在休息舱反思",
+      "causality_consequence": "为下一章揭露真相埋下伏笔"
+    }
+  ]
+}

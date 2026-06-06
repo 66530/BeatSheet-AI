@@ -1,0 +1,44 @@
+{
+  "novel_id": "NOV_GOLD_002",
+  "title": "星际迷航：最后的边疆 — Gold Standard v1",
+  "description": "Gold-standard entity resolution mapping for novel 002 (sci-fi)",
+  "entity_map": {
+    "赵宇": "CH_ZHAO",
+    "赵舰长": "CH_ZHAO",
+    "Captain Zhao": "CH_ZHAO",
+    "艾琳": "CH_AI",
+    "艾博士": "CH_AI",
+    "Dr. Ai": "CH_AI",
+    "MAX": "CH_MAX",
+    "机器人麦克斯": "CH_MAX",
+    "司令": "CH_LI",
+    "李司令": "CH_LI",
+    "李将军": "CH_LI"
+  },
+  "master_cast": [
+    {
+      "character_id": "CH_ZHAO",
+      "canonical_name": "赵宇",
+      "aliases": ["赵宇", "赵舰长", "Captain Zhao"],
+      "role": "protagonist"
+    },
+    {
+      "character_id": "CH_AI",
+      "canonical_name": "艾琳",
+      "aliases": ["艾琳", "艾博士", "Dr. Ai"],
+      "role": "supporting"
+    },
+    {
+      "character_id": "CH_MAX",
+      "canonical_name": "MAX",
+      "aliases": ["MAX", "机器人麦克斯"],
+      "role": "supporting"
+    },
+    {
+      "character_id": "CH_LI",
+      "canonical_name": "李司令",
+      "aliases": ["司令", "李司令", "李将军"],
+      "role": "antagonist"
+    }
+  ]
+}

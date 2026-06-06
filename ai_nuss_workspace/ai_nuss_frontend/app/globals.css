@@ -1,0 +1,211 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* === AI-NUSS 3.0 Director Console — Global Styles === */
+
+:root {
+  --nuss-bg: #0a0a0f;
+  --nuss-surface: #14141f;
+  --nuss-border: #2a2a3a;
+  --nuss-accent: #6c5ce7;
+  --nuss-text: #e0e0e0;
+  --nuss-muted: #888899;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  background-color: var(--nuss-bg);
+  color: var(--nuss-text);
+  font-family: "Inter", system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* === Scrollbar Styling (dark console theme) === */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: var(--nuss-bg);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--nuss-border);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--nuss-muted);
+}
+
+/* === Utility: Blank-Safe Card (Chapter 9:缺省安全UI渲染契约) === */
+@layer components {
+  .blank-safe-card {
+    border: 1px dashed var(--nuss-border);
+    border-radius: 0.5rem;
+    padding: 1rem;
+    transition: all 0.3s ease;
+    background: var(--nuss-surface);
+  }
+  .blank-safe-card:hover {
+    border-color: var(--nuss-accent);
+    box-shadow: 0 0 16px rgba(108, 92, 231, 0.15);
+  }
+
+  .console-panel {
+    border-radius: 0.5rem;
+    border: 1px solid var(--nuss-border);
+    padding: 1rem;
+    background: var(--nuss-surface);
+  }
+
+  .console-btn {
+    padding: 0.5rem 1rem;
+    border-radius: 0.375rem;
+    font-weight: 500;
+    font-size: 0.875rem;
+    transition: all 0.2s ease;
+    border: 1px solid var(--nuss-border);
+    background: var(--nuss-surface);
+    color: var(--nuss-text);
+    cursor: pointer;
+  }
+  .console-btn:hover {
+    border-color: var(--nuss-accent);
+    background: rgba(108, 92, 231, 0.1);
+  }
+  .console-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  .console-btn-primary {
+    padding: 0.5rem 1rem;
+    border-radius: 0.375rem;
+    font-weight: 500;
+    font-size: 0.875rem;
+    transition: all 0.2s ease;
+    border: 1px solid var(--nuss-accent);
+    background: var(--nuss-accent);
+    color: #fff;
+    cursor: pointer;
+  }
+  .console-btn-primary:hover {
+    background: #7c6cf0;
+    box-shadow: 0 0 20px rgba(108, 92, 231, 0.3);
+  }
+  .console-btn-primary:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  /* ═══════════════════════════════════════════════
+     标准剧本排版样式
+     ═══════════════════════════════════════════════ */
+  .script-page {
+    background: #fafaf8;
+    color: #1a1a1a;
+    padding: 3rem 3.5rem 3rem 3.8rem;
+    font-family: "SimSun", "Noto Serif CJK SC", "Source Han Serif SC", "宋体", serif;
+    font-size: 14px;
+    line-height: 1.8;
+    max-width: 800px;
+    margin: 0 auto;
+    border: 1px solid var(--nuss-border);
+    border-radius: 4px;
+  }
+
+  .script-scene-heading {
+    font-size: 15px;
+    font-weight: 700;
+    margin: 2em 0 0.8em 0;
+    padding-bottom: 0.2em;
+    border-bottom: 2px solid #333;
+    letter-spacing: 0.05em;
+  }
+
+  .script-scene-context {
+    font-size: 11px;
+    color: #666;
+    margin-bottom: 1.2em;
+    font-style: italic;
+  }
+
+  .script-action {
+    margin: 0.8em 0;
+    text-align: justify;
+    line-height: 1.8;
+  }
+
+  .script-char-ref {
+    color: var(--nuss-accent);
+    font-size: 10px;
+    font-family: monospace;
+  }
+
+  .script-transition {
+    text-align: right;
+    font-weight: 700;
+    font-size: 12px;
+    margin: 1em 0;
+    letter-spacing: 0.1em;
+  }
+
+  .script-dialogue-block {
+    margin: 0.8em auto;
+    max-width: 480px;
+  }
+
+  .script-character-name {
+    text-align: center;
+    font-weight: 700;
+    font-size: 14px;
+    letter-spacing: 0.08em;
+    margin-bottom: 0.1em;
+  }
+
+  .script-parenthetical {
+    font-weight: 400;
+    font-size: 12px;
+    color: #555;
+    margin-left: 0.3em;
+  }
+
+  .script-dialogue-line {
+    text-align: center;
+    padding: 0 2em;
+    line-height: 1.7;
+  }
+
+  .script-subtext {
+    text-align: center;
+    font-size: 10px;
+    color: #999;
+    font-style: italic;
+    margin-top: 0.2em;
+  }
+
+  .script-caption {
+    text-align: center;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    margin: 0.6em 0;
+    padding: 0.2em 0;
+    border-top: 1px solid #ddd;
+    border-bottom: 1px solid #ddd;
+  }
+
+  .script-scene-separator {
+    text-align: center;
+    color: #999;
+    margin: 2em 0 0.5em 0;
+    letter-spacing: 0.3em;
+  }
+}

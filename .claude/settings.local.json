@@ -1,0 +1,15 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python -m pytest tests/test_evaluation_framework.py -v --tb=short)",
+      "Bash(timeout 8 npx next dev -p 3001)",
+      "Bash(python -c ' *)",
+      "Bash(powershell -Command 'Get-NetTCPConnection -LocalPort 8000 -ErrorAction SilentlyContinue | ForEach-Object { Stop-Process -Id $_.OwningProcess -Force }')",
+      "Bash(python -m uvicorn app.main:app --host 0.0.0.0 --port 8000)",
+      "Bash(curl -s http://localhost:8000/health)",
+      "Bash(python -m json.tool)",
+      "Bash(curl -s -X POST http://localhost:8000/api/v1/jobs/submit -H \"Content-Type: application/json\" -d '{\"file_text\":\"测试文本\",\"file_type\":\"txt\",\"novel_title\":\"测试\",\"file_name\":\"test.txt\"}')",
+      "Bash(curl -s -X POST http://localhost:8000/api/v1/jobs/submit -H 'Content-Type: application/json' --data-raw '{\"file_text\":\"测试文本\",\"file_type\":\"txt\",\"novel_title\":\"测试\",\"file_name\":\"test.txt\"}')"
+    ]
+  }
+}
