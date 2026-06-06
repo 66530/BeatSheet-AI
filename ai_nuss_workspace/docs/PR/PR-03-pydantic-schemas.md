@@ -24,3 +24,6 @@ from app.schemas.workflow import BaseOutputSchema, NovelSubmitResponse
 
 ## 依赖
 无强依赖，可独立合并。
+
+---
+**Status: Submitted** | Branch: `pr/PR-03-pydantic-schemas`
