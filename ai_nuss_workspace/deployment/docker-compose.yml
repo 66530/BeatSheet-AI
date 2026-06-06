@@ -1,0 +1,144 @@
+# AI-NUSS 3.0 — Production Docker Compose Orchestration
+# Chapter 10: One-command cluster deployment.
+# Usage: docker compose up -d
+version: '3.8'
+
+services:
+  # ═══════════════════════════════════════════════════════════
+  # PostgreSQL — Single Source of Truth (Chapter 13 §1)
+  # ═══════════════════════════════════════════════════════════
+  ai_nuss_postgres:
+    image: postgres:15-alpine
+    container_name: ai_nuss_postgres
+    environment:
+      POSTGRES_DB: ai_nuss_prod
+      POSTGRES_USER: nuss_admin
+      POSTGRES_PASSWORD: SecretPGPassword2026
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U nuss_admin -d ai_nuss_prod"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+  # ═══════════════════════════════════════════════════════════
+  # Redis — Distributed State Locks & Pub/Sub (Chapter 13 §1)
+  # ═══════════════════════════════════════════════════════════
+  ai_nuss_redis:
+    image: redis:7-alpine
+    container_name: ai_nuss_redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redisdata:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+    restart: unless-stopped
+
+  # ═══════════════════════════════════════════════════════════
+  # Qdrant — Semantic Recall Vector DB (Chapter 4 & 13 §1)
+  # ═══════════════════════════════════════════════════════════
+  ai_nuss_qdrant:
+    image: qdrant/qdrant:v1.8.0
+    container_name: ai_nuss_qdrant
+    ports:
+      - "6333:6333"
+      - "6334:6334"
+    volumes:
+      - qdrantdata:/qdrant/storage
+    environment:
+      QDRANT__SERVICE__GRPC_PORT: 6334
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:6333/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+  # ═══════════════════════════════════════════════════════════
+  # FastAPI Backend — LangGraph Workflow Engine
+  # ═══════════════════════════════════════════════════════════
+  ai_nuss_backend:
+    build:
+      context: ..
+      dockerfile: deployment/docker/backend.Dockerfile
+    container_name: ai_nuss_backend
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=postgresql+asyncpg://nuss_admin:SecretPGPassword2026@ai_nuss_postgres:5432/ai_nuss_prod
+      - REDIS_HOST=ai_nuss_redis
+      - REDIS_PORT=6379
+      - QDRANT_URL=http://ai_nuss_qdrant:6333
+      - STUB_MODE=false
+      - DEBUG=false
+      # LLM API keys — set via .env or Docker secrets in production
+      - OPENAI_API_KEY=${OPENAI_API_KEY:-}
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY:-}
+      - GEMINI_API_KEY=${GEMINI_API_KEY:-}
+    depends_on:
+      ai_nuss_postgres:
+        condition: service_healthy
+      ai_nuss_redis:
+        condition: service_healthy
+      ai_nuss_qdrant:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+    restart: unless-stopped
+
+  # ═══════════════════════════════════════════════════════════
+  # Next.js Frontend — Director Console UI
+  # ═══════════════════════════════════════════════════════════
+  ai_nuss_frontend:
+    build:
+      context: ..
+      dockerfile: deployment/docker/frontend.Dockerfile
+    container_name: ai_nuss_frontend
+    ports:
+      - "3000:3000"
+    environment:
+      - NEXT_PUBLIC_API_BASE_URL=http://ai_nuss_backend:8000
+      - NEXT_PUBLIC_WS_BASE_URL=ws://ai_nuss_backend:8000
+    depends_on:
+      ai_nuss_backend:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3000"]
+      interval: 20s
+      timeout: 5s
+      retries: 3
+    restart: unless-stopped
+
+  # ═══════════════════════════════════════════════════════════
+  # Nginx — Reverse Proxy (API routing + WebSocket upgrade)
+  # ═══════════════════════════════════════════════════════════
+  ai_nuss_nginx:
+    image: nginx:1.25-alpine
+    container_name: ai_nuss_nginx
+    ports:
+      - "80:80"
+    volumes:
+      - ./docker/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+    depends_on:
+      - ai_nuss_backend
+      - ai_nuss_frontend
+    restart: unless-stopped
+
+volumes:
+  pgdata:
+    name: ai_nuss_pgdata
+  redisdata:
+    name: ai_nuss_redisdata
+  qdrantdata:
+    name: ai_nuss_qdrantdata

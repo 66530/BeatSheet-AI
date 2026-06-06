@@ -1,0 +1,54 @@
+{
+  "novel_id": "NOV_GOLD_001",
+  "gold_standard_breakpoints": [12, 44, 89, 125],
+  "scenes": [
+    {
+      "scene_id": "SC_001_01",
+      "scene_number": 1,
+      "metadata": {
+        "location": "INT. 林府正厅",
+        "time_of_day": "夜",
+        "timeline_mode": "sequential",
+        "pov_character_id": "CH_LIN"
+      },
+      "boundary_line_number": 12,
+      "character_ids": ["CH_LIN", "CH_MOTHER"]
+    },
+    {
+      "scene_id": "SC_001_02",
+      "scene_number": 2,
+      "metadata": {
+        "location": "EXT. 林家花园",
+        "time_of_day": "日",
+        "timeline_mode": "flashback",
+        "pov_character_id": "CH_LIN"
+      },
+      "boundary_line_number": 44,
+      "character_ids": ["CH_LIN"]
+    },
+    {
+      "scene_id": "SC_001_03",
+      "scene_number": 3,
+      "metadata": {
+        "location": "INT. 林府回廊",
+        "time_of_day": "日",
+        "timeline_mode": "sequential",
+        "pov_character_id": "CH_WANG"
+      },
+      "boundary_line_number": 89,
+      "character_ids": ["CH_WANG", "CH_LIN"]
+    },
+    {
+      "scene_id": "SC_001_04",
+      "scene_number": 4,
+      "metadata": {
+        "location": "INT. 林雨欣卧室",
+        "time_of_day": "夜",
+        "timeline_mode": "sequential",
+        "pov_character_id": "CH_LIN"
+      },
+      "boundary_line_number": 125,
+      "character_ids": ["CH_LIN"]
+    }
+  ]
+}
