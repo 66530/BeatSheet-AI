@@ -33,3 +33,6 @@ curl -X POST http://localhost:8000/api/v1/jobs/submit \
 
 ## 依赖
 无前序 PR。本 PR 为项目起点。
+
+---
+**Status: Submitted** | Branch: `pr/PR-01-fastapi-bootstrap`
