@@ -26,3 +26,6 @@ curl http://localhost/        # → Next.js 首页
 
 ## 依赖
 PR-01 至 PR-12（完整应用）
+
+---
+**Status: Submitted** | Branch: `pr/PR-13-docker-deploy`
