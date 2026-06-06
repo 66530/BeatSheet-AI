@@ -26,3 +26,6 @@ pytest tests/test_evaluation_framework.py -v
 
 ## 依赖
 PR-05~PR-10（核心引擎 + Agent 层）
+
+---
+**Status: Submitted** | Branch: `pr/PR-14-eval-framework`
