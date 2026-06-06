@@ -24,3 +24,6 @@
 
 ## 依赖
 PR-04（前端骨架）, PR-09（JobStore）
+
+---
+**Status: Submitted** | Branch: `pr/PR-11-websocket-events`
