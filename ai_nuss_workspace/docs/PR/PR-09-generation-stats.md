@@ -26,3 +26,6 @@ assert stats["scene_health"]["avg_chars"] > 0
 
 ## 依赖
 PR-08（ScreenplayAgent）
+
+---
+**Status: Submitted** | Branch: `pr/PR-09-generation-stats`
