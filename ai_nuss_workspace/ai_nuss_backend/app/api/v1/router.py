@@ -4,11 +4,19 @@ Aggregates all endpoint sub-routers under /api/v1.
 """
 from fastapi import APIRouter
 from app.api.v1.endpoints import (
+    auth,
     jobs,
     websocket,
 )
 
 api_v1_router = APIRouter(prefix="/api/v1")
+
+# === Authentication (login / token) ===
+api_v1_router.include_router(
+    auth.router,
+    prefix="/auth",
+    tags=["Auth"],
+)
 
 # === Job submission & status (Chapter 6 §1) ===
 api_v1_router.include_router(
