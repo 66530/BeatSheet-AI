@@ -24,3 +24,6 @@ assert result.success in (True, False)
 
 ## 依赖
 PR-03（BaseOutputSchema）, PR-05（Cognitive Kernel）
+
+---
+**Status: Submitted** | Branch: `pr/PR-06-agent-base`
