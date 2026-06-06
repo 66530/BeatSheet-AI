@@ -25,3 +25,6 @@ cd ai_nuss_frontend && npm run dev
 
 ## 依赖
 PR-01（后端 /health 端点可用）
+
+---
+**Status: Submitted** | Branch: `pr/PR-04-nextjs-skeleton`
