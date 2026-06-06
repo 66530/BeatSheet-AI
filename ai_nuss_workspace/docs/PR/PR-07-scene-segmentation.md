@@ -29,3 +29,6 @@
 
 ## 依赖
 PR-05（Cognitive Kernel）, PR-06（BaseAgent）
+
+---
+**Status: Submitted** | Branch: `pr/PR-07-scene-segmentation`
