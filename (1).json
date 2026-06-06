@@ -1,0 +1,72 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "AI_NUSS_Story_Schema",
+  "type": "object",
+  "required": ["story_id", "title", "episodes"],
+  "properties": {
+    "story_id": { "type": "string", "description": "故事唯一编号" },
+    "title": { "type": "string", "description": "故事/小说总名称" },
+    "episodes": {
+      "type": "array",
+      "description": "第一层：剧集 (Episode)",
+      "items": {
+        "type": "object",
+        "required": ["episode_id", "episode_number", "scenes"],
+        "properties": {
+          "episode_id": { "type": "string" },
+          "episode_number": { "type": "integer" },
+          "scenes": {
+            "type": "array",
+            "description": "第二层：场次 (Scene)",
+            "items": {
+              "type": "object",
+              "required": ["scene_id", "scene_number", "location", "timeline_mode", "splitting_reason", "beats"],
+              "properties": {
+                "scene_id": { "type": "string", "description": "场次ID" },
+                "scene_number": { "type": "integer", "description": "场次序号" },
+                "location": { "type": "string", "description": "具体空间地点" },
+                "timeline_mode": {
+                  "type": "string",
+                  "description": "明确划分场景的时空内在逻辑",
+                  "enum": ["location_shift", "time_shift", "flashback", "montage", "simultaneous"]
+                },
+                "splitting_reason": { 
+                  "type": "string", 
+                  "description": "【白盒化可解释性】AI 阐述为什么在这里切分为新的一场（回答‘为什么这样划分’）" 
+                },
+                "beats": {
+                  "type": "array",
+                  "description": "第三层：剧情节点 (Beat)",
+                  "items": {
+                    "type": "object",
+                    "required": ["beat_id", "beat_elements"],
+                    "properties": {
+                      "beat_id": { "type": "string" },
+                      "beat_elements": {
+                        "type": "array",
+                        "description": "第四层：时序表现元素 (Elements - 包含人物、动作、对白等)",
+                        "items": {
+                          "type": "object",
+                          "required": ["type", "content"],
+                          "properties": {
+                            "type": {
+                              "type": "string",
+                              "enum": ["cast", "action", "dialogue", "voice_over", "inner_monologue", "caption", "flashback"]
+                            },
+                            "character_id": { "type": "string", "description": "关联的人物消歧ID" },
+                            "character_name": { "type": "string", "description": "角色文本名" },
+                            "content": { "type": "string", "description": "具体文本内容，支持 YAML | 折叠符号" }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
