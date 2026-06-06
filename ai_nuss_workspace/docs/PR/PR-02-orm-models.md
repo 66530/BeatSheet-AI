@@ -27,3 +27,6 @@ from app.models import Novel, Character, Scene, Beat
 
 ## 依赖
 PR-01（FastAPI 骨架 + database.py 懒引擎）
+
+---
+**Status: Submitted** | Branch: `pr/PR-02-orm-models`
