@@ -24,3 +24,6 @@
 
 ## 依赖
 PR-11（WebSocket Events）
+
+---
+**Status: Submitted** | Branch: `pr/PR-12-realtime-progress`
