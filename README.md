@@ -1,12 +1,11 @@
 <h1 align="center">
-  <img src="docs/images/logo.svg" alt="NovaDirector AI" width="64" /><br/>
   NovaDirector AI<br/>
   <sup>BeatSheet-AI</sup>
 </h1>
 
 <p align="center">
   <b>From Novel to Screenplay, From Story to Screen.</b><br/>
-  <sub>AI-NUSS 3.0 — Novel → Screenplay Adaptation Engine</sub>
+  <sub>AI-NUSS 3.0 — Novel to Screenplay Adaptation Engine</sub>
 </p>
 
 <p align="center">
@@ -15,7 +14,6 @@
   <img src="https://img.shields.io/badge/next.js-14.2-black?style=flat-square&logo=next.js" alt="Next.js 14"/>
   <img src="https://img.shields.io/badge/fastapi-0.115-009688?style=flat-square&logo=fastapi&logoColor=white" alt="FastAPI"/>
   <img src="https://img.shields.io/badge/LangGraph-powered-1C3C3C?style=flat-square" alt="LangGraph"/>
-  <img src="https://img.shields.io/badge/license-MIT-green?style=flat-square" alt="MIT License"/>
 </p>
 
 ---
@@ -26,7 +24,7 @@
 
 ---
 
-## 📖 Overview
+## Overview
 
 **NovaDirector AI** is a full-stack AI application that automatically adapts novels into professional screenplays. Powered by a multi-agent LangGraph pipeline and any OpenAI-compatible LLM (DeepSeek, OpenAI, OpenRouter, etc.), it transforms raw novel text through seven specialized AI agents — from narrative analysis and character disambiguation to scene segmentation, beat extraction, and director-level cinematic guidance.
 
@@ -36,24 +34,24 @@ The system produces studio-ready output: numbered scenes with dramatic beats, ch
 <tr>
 <td width="50%">
 
-### 🎯 What It Does
-- **Upload a novel** (.txt / .docx / .pdf) → get a complete screenplay
-- **7-stage AI pipeline** with real-time WebSocket progress
-- **Character disambiguation** with confidence scoring
-- **Scene segmentation** by 5 rule types + AI enrichment
+### What It Does
+- **Upload a novel** (.txt / .docx / .pdf) and receive a complete screenplay
+- **7-stage AI pipeline** with real-time WebSocket progress tracking
+- **Character disambiguation** with confidence scoring and alias resolution
+- **Scene segmentation** by 5 rule types plus AI enrichment
 - **Director copilot** — camera plans, lighting, music per scene
 - **Real-time dashboard** with quality metrics and health scores
 
 </td>
 <td width="50%">
 
-### 🏗 Architecture at a Glance
+### Architecture at a Glance
 
 ```
-Novel → [Parser] → [Narrative Analyzer] → [Story Bible]
-  → [Character Resolver] → [Scene Segmenter]
-  → [Screenplay Generator] → [Director Agent]
-  → 🎬 Structured Screenplay
+Novel -> [Parser] -> [Narrative Analyzer] -> [Story Bible]
+  -> [Character Resolver] -> [Scene Segmenter]
+  -> [Screenplay Generator] -> [Director Agent]
+  -> Structured Screenplay
 ```
 
 - **LangGraph DAG** orchestrates 7 agent nodes
@@ -67,13 +65,13 @@ Novel → [Parser] → [Narrative Analyzer] → [Story Bible]
 
 ---
 
-## ✨ Key Features
+## Key Features
 
 <table>
 <tr>
 <td width="33%">
 
-### 🔬 Multi-Agent AI Pipeline
+### Multi-Agent AI Pipeline
 6 specialized AI agents collaborate in a directed acyclic graph, each handling one stage of adaptation. Agents communicate via a shared LangGraph state object with full versioning and audit trails.
 
 **Agents:**
@@ -87,7 +85,7 @@ Novel → [Parser] → [Narrative Analyzer] → [Story Bible]
 </td>
 <td width="33%">
 
-### 🎥 Scene Segmentation Engine
+### Scene Segmentation Engine
 A deterministic 5-type scene boundary detector handles:
 - **Location Shift** — Physical scene changes
 - **Time Shift** — Same location, different time
@@ -100,13 +98,13 @@ Plus a quality scoring system (25% structure + 20% character + 20% conflict + 15
 </td>
 <td width="33%">
 
-### 🎬 Director Copilot
+### Director Copilot
 Post-generation cinematic analysis produces per-scene:
 - **Emotion** — suspense / romantic / action / mysterious / ...
 - **Visual Style** — crime_drama / sci_fi / historical / ...
-- **Camera Plan** — 3–5 shots (establishing, close_up, tracking, ...)
-- **Lighting** — "冷蓝色低照度灯光", "暖黄色柔光", ...
-- **Music** — Score direction with emotional intent
+- **Camera Plan** — 3-5 shots (establishing, close_up, tracking, ...)
+- **Lighting** — descriptive lighting direction per scene
+- **Music** — score direction with emotional intent
 - **Pacing** — slow / medium / fast
 
 </td>
@@ -115,19 +113,19 @@ Post-generation cinematic analysis produces per-scene:
 
 ---
 
-## 🔄 Pipeline Workflow
+## Pipeline Workflow
 
 ```mermaid
 graph TD
-    A[📄 Document Parser] -->|chapters| B[📊 Narrative Analyzer]
-    B -->|theme, genre, conflict| C[📖 Story Bible]
-    C -->|world, rules| D[👥 Character Resolver]
-    D -->|confidence OK| E[🎬 Scene Segmenter]
-    D -->|low confidence| R[🔍 Human Review]
+    A[Document Parser] -->|chapters| B[Narrative Analyzer]
+    B -->|theme, genre, conflict| C[Story Bible]
+    C -->|world, rules| D[Character Resolver]
+    D -->|confidence OK| E[Scene Segmenter]
+    D -->|low confidence| R[Human Review]
     R -->|resolved| E
-    E -->|scenes| F[📝 Beat + Screenplay Generator]
-    F -->|beats, dialogues| G[🎥 Director Agent]
-    G -->|camera, lighting, music| H[✅ Completed]
+    E -->|scenes| F[Beat + Screenplay Generator]
+    F -->|beats, dialogues| G[Director Agent]
+    G -->|camera, lighting, music| H[Completed]
 
     style A fill:#1a1a2e,stroke:#16213e
     style H fill:#0f3460,stroke:#16213e
@@ -136,26 +134,26 @@ graph TD
 
 | Stage | Agent | Progress | Output |
 |-------|-------|----------|--------|
-| **0. Parse** | Kernel (Rule-based) | 0–10% | Chapters, character count |
-| **1. Narrative** | `NarrativeAnalyzer` | 10–20% | Theme, genre, premise, conflict |
-| **2. Bible** | `BibleAgent` | 20–28% | World setting, organizations, rules |
-| **3. Characters** | `CharacterAgent` | 28–40% | Entity map, cast list, constraints |
-| **4. Scenes** | `SceneAgent` | 40–65% | Numbered scenes with metadata |
-| **5. Screenplay** | `ScreenplayAgent` | 65–95% | Beats, dialogues, actions |
-| **5.5. Director** | `DirectorAgent` | 93–98% | Per-scene cinematic guidance |
-| **6. Complete** | — | 98–100% | Final structured screenplay |
+| **0. Parse** | Kernel (Rule-based) | 0-10% | Chapters, character count |
+| **1. Narrative** | `NarrativeAnalyzer` | 10-20% | Theme, genre, premise, conflict |
+| **2. Bible** | `BibleAgent` | 20-28% | World setting, organizations, rules |
+| **3. Characters** | `CharacterAgent` | 28-40% | Entity map, cast list, constraints |
+| **4. Scenes** | `SceneAgent` | 40-65% | Numbered scenes with metadata |
+| **5. Screenplay** | `ScreenplayAgent` | 65-95% | Beats, dialogues, actions |
+| **5.5. Director** | `DirectorAgent` | 93-98% | Per-scene cinematic guidance |
+| **6. Complete** | -- | 98-100% | Final structured screenplay |
 
 ---
 
-## 📸 Screenshots
+## Screenshots
 
 <p align="center">
-  <b>Director Console — Workspace</b><br/>
+  <b>Director Console -- Workspace</b><br/>
   <img src="docs/images/screenshot-workspace.png" alt="Workspace" width="80%" />
 </p>
 
 <details>
-<summary><b>📷 More Screenshots (click to expand)</b></summary>
+<summary><b>More Screenshots (click to expand)</b></summary>
 
 <p align="center">
   <b>Scene Workbench with Quality Dashboard</b><br/>
@@ -178,7 +176,7 @@ graph TD
 </p>
 
 <p align="center">
-  <b>Upload & Processing Pipeline</b><br/>
+  <b>Upload and Processing Pipeline</b><br/>
   <img src="docs/images/screenshot-upload.png" alt="Upload" width="80%" />
 </p>
 
@@ -186,13 +184,13 @@ graph TD
 
 ---
 
-## 🚀 Quick Start
+## Quick Start
 
 ### Prerequisites
 
 - **Python** 3.11+
 - **Node.js** 18+ with npm
-- **Docker** (optional — for PostgreSQL, Redis, Qdrant)
+- **Docker** (optional -- for PostgreSQL, Redis, Qdrant)
 - An API key from any OpenAI-compatible provider
 
 ### One-Click Launch
@@ -206,17 +204,17 @@ cd BeatSheet-AI/ai_nuss_workspace
 python run.py
 ```
 
-Then open **http://localhost:3000** — the Director Console will open automatically.
+Then open **http://localhost:3000** -- the Director Console will open automatically.
 
 ### Manual Start
 
 ```bash
-# Terminal 1 — Backend
+# Terminal 1 -- Backend
 cd ai_nuss_backend
 pip install -r requirements.txt
 uvicorn app.main:app --host 0.0.0.0 --port 8000
 
-# Terminal 2 — Frontend
+# Terminal 2 -- Frontend
 cd ai_nuss_frontend
 npm install --legacy-peer-deps
 npm run dev
@@ -232,7 +230,7 @@ docker compose up -d
 
 ---
 
-## ⚙️ Configuration
+## Configuration
 
 ### Model Setup
 
@@ -258,7 +256,7 @@ NovaDirector AI works with **any OpenAI-compatible API**. The model configuratio
 ### Environment Variables
 
 ```bash
-# .env — backend configuration
+# .env -- backend configuration
 STUB_MODE=false           # Set to true for offline/demo mode (no API calls)
 DEBUG=true                # Enable debug mode
 DATABASE_URL=...          # PostgreSQL connection string (Docker provides default)
@@ -268,7 +266,7 @@ QDRANT_URL=...            # Qdrant vector DB URL
 
 ---
 
-## 🔌 API Reference
+## API Reference
 
 | Method | Endpoint | Description |
 |--------|----------|-------------|
@@ -286,20 +284,20 @@ QDRANT_URL=...            # Qdrant vector DB URL
 ### WebSocket Events
 
 ```
-state_snapshot    → Full state on connect
-progress_update   → Stage and percentage change
-scene_refining    → Current scene being enriched
-scene_refined     → Scene enrichment complete
-character_found   → New character identified
-beat_generated    → Beat extracted from scene
-director_complete → Director analysis finished
-pipeline_complete → All stages done
-pipeline_error    → Error with traceback
+state_snapshot    -> Full state on connect
+progress_update   -> Stage and percentage change
+scene_refining    -> Current scene being enriched
+scene_refined     -> Scene enrichment complete
+character_found   -> New character identified
+beat_generated    -> Beat extracted from scene
+director_complete -> Director analysis finished
+pipeline_complete -> All stages done
+pipeline_error    -> Error with traceback
 ```
 
 ---
 
-## 📂 Project Structure
+## Project Structure
 
 ```
 BeatSheet-AI/
@@ -373,10 +371,10 @@ BeatSheet-AI/
 
 ---
 
-## 🧠 Design Philosophy
+## Design Philosophy
 
 ### Graceful Degradation
-Every AI agent has a **dual-path architecture**: `_run_real()` calls the configured LLM, `_run_mock()` provides deterministic rule-based fallback. If the API fails, the system continues with reasonable defaults — the pipeline never crashes.
+Every AI agent has a **dual-path architecture**: `_run_real()` calls the configured LLM, `_run_mock()` provides deterministic rule-based fallback. If the API fails, the system continues with reasonable defaults -- the pipeline never crashes.
 
 ### State Versioning
 All state mutations are versioned (`story_bible_version`, `entity_map_version`, `scene_version`, `director_version`) and atomically logged to an `event_log` audit trail.
@@ -389,7 +387,7 @@ WebSocket streaming with exponential backoff reconnect ensures the director cons
 
 ---
 
-## 🧪 Evaluation
+## Evaluation
 
 The project includes gold-standard benchmark datasets for evaluating adaptation quality:
 
@@ -407,7 +405,7 @@ evaluation/gold_standard/
 
 ---
 
-## 🛠 Tech Stack
+## Tech Stack
 
 <table>
 <tr>
@@ -416,61 +414,48 @@ evaluation/gold_standard/
 <th>Purpose</th>
 </tr>
 <tr>
-<td>🖥 Frontend</td>
-<td>Next.js 14 · React 18 · TypeScript · Tailwind CSS</td>
+<td>Frontend</td>
+<td>Next.js 14, React 18, TypeScript, Tailwind CSS</td>
 <td>Director Console UI</td>
 </tr>
 <tr>
-<td>⚡ Backend</td>
-<td>FastAPI · Uvicorn · Python 3.11+</td>
+<td>Backend</td>
+<td>FastAPI, Uvicorn, Python 3.11+</td>
 <td>Async REST + WebSocket API</td>
 </tr>
 <tr>
-<td>🧠 AI Orchestration</td>
-<td>LangGraph · LangGraph Checkpoint</td>
+<td>AI Orchestration</td>
+<td>LangGraph, LangGraph Checkpoint</td>
 <td>Multi-agent DAG workflow</td>
 </tr>
 <tr>
-<td>🤖 LLM</td>
-<td>OpenAI SDK (compatible) · Any provider</td>
+<td>LLM</td>
+<td>OpenAI SDK (compatible), Any provider</td>
 <td>Per-agent LLM calls</td>
 </tr>
 <tr>
-<td>🗄 Database</td>
-<td>PostgreSQL 15 · Redis 7</td>
-<td>State persistence & pub/sub</td>
+<td>Database</td>
+<td>PostgreSQL 15, Redis 7</td>
+<td>State persistence and pub/sub</td>
 </tr>
 <tr>
-<td>🔍 Vector DB</td>
+<td>Vector DB</td>
 <td>Qdrant v1.8</td>
 <td>Semantic character recall</td>
 </tr>
 <tr>
-<td>📦 Container</td>
-<td>Docker · Docker Compose · Nginx</td>
+<td>Container</td>
+<td>Docker, Docker Compose, Nginx</td>
 <td>Production deployment</td>
 </tr>
 <tr>
-<td>📡 Real-time</td>
+<td>Real-time</td>
 <td>WebSocket (native) + exponential backoff</td>
 <td>Live progress streaming</td>
 </tr>
 <tr>
-<td>🔐 Auth</td>
-<td>PyJWT · Browser localStorage</td>
+<td>Auth</td>
+<td>PyJWT, Browser localStorage</td>
 <td>Token-based authentication</td>
 </tr>
 </table>
-
----
-
-## 📄 License
-
-MIT © 2025–2026 NovaDirector AI
-
----
-
-<p align="center">
-  <sub>Built with ❤️ for storytellers, screenwriters, and AI enthusiasts.</sub><br/>
-  <sub>⭐ Star this repo if you find it useful!</sub>
-</p>
