@@ -32,7 +32,7 @@ class BibleAgent(BaseAgent[Dict[str, Any]]):
 
 请严格按照 JSON schema 输出，只返回 JSON，不要包含其他文字。"""
 
-        result = await self._call_deepseek_json(user_msg)
+        result = await self._call_llm_json(state, user_msg)
         return {
             "story_bible": result.get("story_bible", {}),
             "story_bible_version": state.get("story_bible_version", 1),

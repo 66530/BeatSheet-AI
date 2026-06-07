@@ -11,6 +11,7 @@ from pydantic import BaseModel
 
 from app.core.job_store import store
 from app.core.processor import process_job
+from app.core.llm_factory import test_llm_connection
 
 router = APIRouter()
 
@@ -25,6 +26,7 @@ class SubmitRequest(BaseModel):
     novel_title: str = "Untitled"
     file_name: str = ""
     config: dict = {}
+    llm_config: dict = {}  # 用户模型配置 (不能叫 model_config，Pydantic 保留字段)
 
 
 # ═══════════════════════════════════════════════════════════
@@ -37,11 +39,12 @@ async def submit_novel_job(req: SubmitRequest, background_tasks: BackgroundTasks
     Submit a novel for adaptation.
     Creates a job, stores the text, and kicks off background processing.
     """
-    # Create job
+    # Create job with user model config
     job = await store.create_job(
         novel_title=req.novel_title or req.file_name or "Untitled",
         file_text=req.file_text,
         file_name=req.file_name,
+        model_config=req.llm_config or {},
     )
 
     # Kick off async processing in background
@@ -134,3 +137,25 @@ async def review_scenes(job_id: str, review: dict):
         "status": "acknowledged",
         "message": "Review recorded",
     }
+
+
+# ═══════════════════════════════════════════════════════════
+# POST /api/v1/model/test — 测试模型连接
+# ═══════════════════════════════════════════════════════════
+
+class ModelTestRequest(BaseModel):
+    provider: str = ""
+    base_url: str = ""
+    model: str = ""
+    api_key: str = ""
+
+@router.post("/model/test")
+async def test_model_connection(req: ModelTestRequest):
+    """Test a model configuration by sending a minimal request."""
+    result = await test_llm_connection({
+        "provider": req.provider,
+        "base_url": req.base_url,
+        "model": req.model,
+        "api_key": req.api_key,
+    })
+    return result

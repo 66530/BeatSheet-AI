@@ -11,8 +11,7 @@ import time
 import asyncio
 from dataclasses import dataclass, field
 from typing import Dict, Any, List, Optional
-from app.graph.agents.base import BaseAgent, get_deepseek_client
-from app.core.config import settings
+from app.graph.agents.base import BaseAgent
 
 
 BEAT_SYSTEM_PROMPT = """你是专业影视编剧。请将场景文本分解为3-5个戏剧节拍，为每个节拍生成可拍摄的剧本元素。
@@ -124,7 +123,7 @@ class ScreenplayAgent(BaseAgent[Dict[str, Any]]):
             t_start = time.time()
             try:
                 async with sem:
-                    result = await self._call_deepseek_for_scene(scene, cast)
+                    result = await self._call_llm_for_scene(state, scene, cast)
                 status.latency = round(time.time() - t_start, 2)
 
                 if result.get("tokens_in"): status.input_tokens = result["tokens_in"]
@@ -227,8 +226,8 @@ class ScreenplayAgent(BaseAgent[Dict[str, Any]]):
             "_coverage": stats.coverage,
         }
 
-    async def _call_deepseek_for_scene(self, scene: Dict, cast_list: List[Dict]) -> Dict:
-        """调用 DeepSeek 生成单场景节拍。返回 {beats, tokens_in, tokens_out}"""
+    async def _call_llm_for_scene(self, state: Dict, scene: Dict, cast_list: List[Dict]) -> Dict:
+        """调用 LLM 生成单场景节拍。返回 {beats, tokens_in, tokens_out}"""
         text = scene.get("raw_scene_text_block", "")
 
         cast_text = "\n".join(
@@ -236,7 +235,8 @@ class ScreenplayAgent(BaseAgent[Dict[str, Any]]):
             for c in cast_list[:8]
         )
 
-        client = get_deepseek_client()
+        client = self._get_raw_client(state)
+        model = self._get_model_name(state)
         prompt = f"""场景信息:
 - 地点: {scene.get('location','?')}  时间: {scene.get('time','日')}
 - 叙事模式: {scene.get('timeline_mode','sequential')}
@@ -250,7 +250,7 @@ class ScreenplayAgent(BaseAgent[Dict[str, Any]]):
 
         resp = await asyncio.wait_for(
             client.chat.completions.create(
-                model=settings.DEEPSEEK_MODEL,
+                model=model,
                 messages=[
                     {"role": "system", "content": BEAT_SYSTEM_PROMPT},
                     {"role": "user", "content": prompt},

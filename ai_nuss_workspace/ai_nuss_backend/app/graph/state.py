@@ -26,6 +26,10 @@ class AINUSSState(TypedDict, total=False):
     story_bible_version: int               # Version number for Story Bible
     entity_map_version: int                # Version number for Entity Map
     scene_version: int                     # Version number for Scene list
+    director_version: int                  # Version number for Director Analysis
+
+    # === User Model Configuration (injected at job creation) ===
+    model_config: Dict[str, Any]           # {"provider","base_url","model","api_key"}
 
     # === Narrative Data Payloads ===
     story_bible: Dict[str, Any]            # World setting, organizations, global rules

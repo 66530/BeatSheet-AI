@@ -33,24 +33,9 @@ class Settings(BaseSettings):
     QDRANT_URL: str = os.getenv("QDRANT_URL", "http://localhost:6333")
     QDRANT_COLLECTION_NAME: str = "ai_nuss_characters"
 
-    # ═══════════════════════════════════════════════════════════
-    # DeepSeek API — Hardcoded (OpenAI-compatible)
-    # ═══════════════════════════════════════════════════════════
-    DEEPSEEK_API_KEY: str = "sk-488f0b28788e44da9504dd23aba48f32"
-    DEEPSEEK_BASE_URL: str = "https://api.deepseek.com"
-    DEEPSEEK_MODEL: str = "deepseek-chat"  # deepseek-chat (V3) or deepseek-reasoner (R1)
-
-    # === LLM API Keys (fallback to DeepSeek) ===
-    OPENAI_API_KEY: Optional[str] = os.getenv("OPENAI_API_KEY", None)
-    GEMINI_API_KEY: Optional[str] = os.getenv("GEMINI_API_KEY", None)
-    ANTHROPIC_API_KEY: Optional[str] = os.getenv("ANTHROPIC_API_KEY", None)
-
-    # === Model Routing — All routed to DeepSeek ===
-    BIBLE_AGENT_MODEL: str = "deepseek-chat"
-    CHARACTER_AGENT_MODEL: str = "deepseek-chat"
-    SCENE_AGENT_MODEL: str = "deepseek-chat"
-    BEAT_AGENT_MODEL: str = "deepseek-chat"
-    SCREENPLAY_AGENT_MODEL: str = "deepseek-chat"
+    # === LLM Configuration — provided by user at runtime via model_config ===
+    # No hardcoded API keys, base URLs, or model names.
+    # All LLM settings are injected through AINUSSState.model_config at job creation.
 
     # === Stub Mode — OFF means real API calls ===
     STUB_MODE: bool = os.getenv("STUB_MODE", "false").lower() == "true"

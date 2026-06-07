@@ -8,18 +8,17 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        // AI-NUSS brand palette — dark director's console aesthetic
         nuss: {
-          bg: "#0a0a0f",
-          surface: "#14141f",
-          border: "#2a2a3a",
-          accent: "#6c5ce7",
-          "accent-glow": "#a29bfe",
-          text: "#e0e0e0",
-          muted: "#888899",
-          success: "#00cec9",
-          warning: "#fdcb6e",
-          danger: "#ff7675",
+          bg: "#ffffff",
+          surface: "#f7f7f8",
+          border: "#e5e5e5",
+          accent: "#10a37f",
+          "accent-glow": "#19c37d",
+          text: "#0d0d0d",
+          muted: "#6e6e80",
+          success: "#10a37f",
+          warning: "#d29922",
+          danger: "#ef4444",
         },
       },
       fontFamily: {

@@ -101,12 +101,14 @@ export interface WebSocketFrameModel {
 }
 
 export type ReviewStatus =
+  | "idle"
   | "uploading"
   | "analyzing"
   | "pending_character"
   | "pending_scene"
   | "generating"
   | "completed"
+  | "completed_partial"
   | "error";
 
 // ═══════════════════════════════════════════════════════════════

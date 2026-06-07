@@ -65,7 +65,7 @@ class JobStore:
         self._listeners: List[EventCallback] = []
         self._lock = asyncio.Lock()
 
-    async def create_job(self, novel_title: str = "", file_text: str = "", file_name: str = "") -> JobRecord:
+    async def create_job(self, novel_title: str = "", file_text: str = "", file_name: str = "", model_config: dict = {}) -> JobRecord:
         """Create a new job and return it."""
         job_id = f"job_{uuid.uuid4().hex[:12]}"
         job = JobRecord(job_id, novel_title)
@@ -73,6 +73,7 @@ class JobStore:
         job.file_name = file_name
         job.state["job_id"] = job_id
         job.state["novel_id"] = job.novel_id
+        job.state["model_config"] = model_config  # User's LLM configuration
 
         async with self._lock:
             self._jobs[job_id] = job

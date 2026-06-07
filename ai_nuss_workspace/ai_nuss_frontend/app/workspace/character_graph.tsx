@@ -1,12 +1,27 @@
 "use client";
 
-import { useState } from "react";
-import type { CharacterUIModel, ReviewStatus } from "../api_client";
+import { useState, useMemo } from "react";
+import type { CharacterUIModel, SceneUIModel, ReviewStatus } from "../api_client";
 
-export default function CharacterGraph({ characters, reviewStatus }: { characters: CharacterUIModel[]; reviewStatus: ReviewStatus }) {
+export default function CharacterGraph({ characters, scenes, reviewStatus }: {
+  characters: CharacterUIModel[]; scenes: SceneUIModel[]; reviewStatus: ReviewStatus;
+}) {
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const isEmpty = characters.length === 0;
   const selected = characters.find(c => c.character_id === selectedId);
+
+  // Build character → scene mapping from scene cast data
+  const charSceneMap = useMemo(() => {
+    const map: Record<string, number[]> = {};
+    for (const s of scenes) {
+      const cast = (s as Record<string, unknown>).cast as string[] || s.character_ids || [];
+      for (const cid of cast) {
+        if (!map[cid]) map[cid] = [];
+        map[cid].push(s.scene_number);
+      }
+    }
+    return map;
+  }, [scenes]);
   const roleLabel: Record<string, string> = { protagonist: "主角", antagonist: "对手", supporting: "配角", cameo: "客串" };
   const roleCls: Record<string, string> = { protagonist: "bg-blue-500/20 text-blue-400", antagonist: "bg-red-500/20 text-red-400", supporting: "bg-gray-500/20 text-gray-400", cameo: "bg-purple-500/20 text-purple-400" };
 
@@ -51,7 +66,7 @@ export default function CharacterGraph({ characters, reviewStatus }: { character
         )}
       </div>
       <div className="col-span-2">
-        {selected ? <DetailPanel character={selected} /> : (
+        {selected ? <DetailPanel character={selected} sceneNums={charSceneMap[selected.character_id] || []} /> : (
           <div className="blank-safe-card p-10 text-center h-full flex items-center justify-center">
             <div><span className="text-4xl"></span><p className="text-[--nuss-muted] mt-3 text-sm">{isEmpty ? "暂无角色数据" : "选择角色查看详情"}</p></div>
           </div>
@@ -61,7 +76,7 @@ export default function CharacterGraph({ characters, reviewStatus }: { character
   );
 }
 
-function DetailPanel({ character }: { character: CharacterUIModel }) {
+function DetailPanel({ character, sceneNums }: { character: CharacterUIModel; sceneNums: number[] }) {
   const c = character.constraints;
   const belief = c?.current_belief || "";
   const goal = c?.current_goal || "";
@@ -78,7 +93,7 @@ function DetailPanel({ character }: { character: CharacterUIModel }) {
         <div>
           <h3 className="text-lg font-semibold">{character.canonical_name}</h3>
           <p className="text-xs text-[--nuss-muted]">
-            {character.character_id} · {((character.confidence_score ?? 1) * 100).toFixed(0)}% 置信度
+            {character.character_id} · {((character.confidence_score ?? 1) * 100).toFixed(0)}% 置信度 · 出场 {sceneNums.length} 场
           </p>
         </div>
       </div>
@@ -89,6 +104,18 @@ function DetailPanel({ character }: { character: CharacterUIModel }) {
             ? character.aliases.map(a => <span key={a} className="px-2 py-0.5 rounded text-[10px] bg-[--nuss-border]/50">{a}</span>)
             : <span className="text-xs text-[--nuss-muted] italic">无别名</span>}
         </div>
+      </Section>
+
+      <Section title={`出场场景 (${sceneNums.length} 场)`}>
+        {sceneNums.length > 0 ? (
+          <div className="flex flex-wrap gap-1">
+            {sceneNums.map(n => (
+              <span key={n} className="px-2 py-0.5 rounded text-[10px] bg-[--nuss-accent]/10 text-[--nuss-accent] font-medium">第{n}场</span>
+            ))}
+          </div>
+        ) : (
+          <span className="text-xs text-[--nuss-muted] italic">暂无出场数据</span>
+        )}
       </Section>
 
       <Section title="戏剧约束">

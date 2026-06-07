@@ -42,7 +42,7 @@ class CharacterAgent(BaseAgent[Dict[str, Any]]):
 
 请严格按照 JSON schema 输出，只返回 JSON，不要包含其他文字。"""
 
-        result = await self._call_deepseek_json(user_msg)
+        result = await self._call_llm_json(state, user_msg)
 
         # Check confidence threshold
         master_cast = result.get("master_cast_list", [])

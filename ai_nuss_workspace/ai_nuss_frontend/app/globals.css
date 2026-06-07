@@ -2,107 +2,93 @@
 @tailwind components;
 @tailwind utilities;
 
-/* === AI-NUSS 3.0 Director Console — Global Styles === */
+/* === NovaDirector AI — ChatGPT-inspired Premium Light Theme === */
 
 :root {
-  --nuss-bg: #0a0a0f;
-  --nuss-surface: #14141f;
-  --nuss-border: #2a2a3a;
-  --nuss-accent: #6c5ce7;
-  --nuss-text: #e0e0e0;
-  --nuss-muted: #888899;
+  --nuss-bg: #ffffff;
+  --nuss-subtle: #f7f7f8;
+  --nuss-surface: #ffffff;
+  --nuss-elevated: #f7f7f8;
+  --nuss-border: #e5e5e5;
+  --nuss-accent: #10a37f;
+  --nuss-accent-glow: #19c37d;
+  --nuss-text: #0d0d0d;
+  --nuss-muted: #6e6e80;
+  --nuss-dim: #c5c5d2;
 }
 
-* {
-  box-sizing: border-box;
-}
+* { box-sizing: border-box; }
 
-html,
-body {
-  margin: 0;
-  padding: 0;
+html, body {
+  margin: 0; padding: 0;
   background-color: var(--nuss-bg);
   color: var(--nuss-text);
-  font-family: "Inter", system-ui, sans-serif;
+  font-family: "Inter", "SF Pro Display", system-ui, -apple-system, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* === Scrollbar Styling (dark console theme) === */
-::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
-}
-::-webkit-scrollbar-track {
-  background: var(--nuss-bg);
-}
-::-webkit-scrollbar-thumb {
-  background: var(--nuss-border);
-  border-radius: 3px;
-}
-::-webkit-scrollbar-thumb:hover {
-  background: var(--nuss-muted);
-}
+/* Scrollbar */
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--nuss-border); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--nuss-muted); }
 
-/* === Utility: Blank-Safe Card (Chapter 9:缺省安全UI渲染契约) === */
 @layer components {
   .blank-safe-card {
-    border: 1px dashed var(--nuss-border);
-    border-radius: 0.5rem;
+    border: 1px solid var(--nuss-border);
+    border-radius: 0.75rem;
     padding: 1rem;
-    transition: all 0.3s ease;
+    transition: all 0.2s ease;
     background: var(--nuss-surface);
   }
   .blank-safe-card:hover {
-    border-color: var(--nuss-accent);
-    box-shadow: 0 0 16px rgba(108, 92, 231, 0.15);
+    border-color: var(--nuss-dim);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
   }
 
   .console-panel {
-    border-radius: 0.5rem;
+    border-radius: 0.75rem;
     border: 1px solid var(--nuss-border);
     padding: 1rem;
     background: var(--nuss-surface);
   }
 
   .console-btn {
-    padding: 0.5rem 1rem;
-    border-radius: 0.375rem;
+    padding: 0.45rem 0.9rem;
+    border-radius: 0.5rem;
     font-weight: 500;
-    font-size: 0.875rem;
-    transition: all 0.2s ease;
+    font-size: 0.8125rem;
+    transition: all 0.15s ease;
     border: 1px solid var(--nuss-border);
     background: var(--nuss-surface);
     color: var(--nuss-text);
     cursor: pointer;
   }
   .console-btn:hover {
-    border-color: var(--nuss-accent);
-    background: rgba(108, 92, 231, 0.1);
+    background: var(--nuss-subtle);
   }
   .console-btn:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
+    opacity: 0.4; cursor: not-allowed;
   }
 
   .console-btn-primary {
-    padding: 0.5rem 1rem;
-    border-radius: 0.375rem;
-    font-weight: 500;
-    font-size: 0.875rem;
-    transition: all 0.2s ease;
+    padding: 0.45rem 0.9rem;
+    border-radius: 0.5rem;
+    font-weight: 600;
+    font-size: 0.8125rem;
+    transition: all 0.15s ease;
     border: 1px solid var(--nuss-accent);
     background: var(--nuss-accent);
     color: #fff;
     cursor: pointer;
   }
   .console-btn-primary:hover {
-    background: #7c6cf0;
-    box-shadow: 0 0 20px rgba(108, 92, 231, 0.3);
+    background: #0d9270;
+    box-shadow: 0 2px 8px rgba(16,163,127,0.2);
   }
   .console-btn-primary:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
+    opacity: 0.4; cursor: not-allowed;
   }
 
   /* ═══════════════════════════════════════════════
@@ -208,4 +194,31 @@ body {
     margin: 2em 0 0.5em 0;
     letter-spacing: 0.3em;
   }
+}
+
+/* ═══════════════════════════════════════════════════════════
+   Print Mode — 隐藏 UI 仅保留剧本内容
+   ═══════════════════════════════════════════════════════════ */
+@media print {
+  header, nav, aside, .no-print,
+  button, select, details, [class*="fixed"], [class*="sticky"] {
+    display: none !important;
+  }
+  body {
+    background: #fff !important;
+    color: #000 !important;
+    font-size: 14px;
+    line-height: 1.8;
+  }
+  main {
+    max-width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+  .script-page {
+    box-shadow: none !important;
+    border: none !important;
+    background: #fff !important;
+  }
+  @page { margin: 25mm; size: A4; }
 }
