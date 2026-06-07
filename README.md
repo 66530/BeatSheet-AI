@@ -1,5 +1,5 @@
 <h1 align="center">
-  <img src="https://raw.githubusercontent.com/66530/BeatSheet-AI/main/docs/images/logo.svg" alt="NovaDirector AI" width="64" /><br/>
+  <img src="docs/images/logo.svg" alt="NovaDirector AI" width="64" /><br/>
   NovaDirector AI<br/>
   <sup>BeatSheet-AI</sup>
 </h1>

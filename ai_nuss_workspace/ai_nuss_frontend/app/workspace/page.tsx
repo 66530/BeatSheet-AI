@@ -318,7 +318,7 @@ export default function WorkspacePage() {
       <div className="min-h-[400px]">
         <div className={activeTab === "upload" ? "" : "hidden"}>
           <UploadPanelInline jobState={jobState} wsConnected={wsConnected} onJobSubmitted={handleJobSubmitted}
-            historyJobs={historyJobs} onLoadHistory={loadHistoryJob} />
+            historyJobs={historyJobs} onLoadHistory={loadHistoryJob} onOpenModelConfig={() => setShowConfig(true)} />
         </div>
         <div className={activeTab === "scenes" ? "" : "hidden"}>
           <SceneDistribution scenes={jobState.scenes} characters={jobState.characters} />
@@ -362,11 +362,12 @@ export default function WorkspacePage() {
 // Upload Panel (inline)
 // ═══════════════════════════════════════════════════
 
-function UploadPanelInline({ jobState, onJobSubmitted, historyJobs, onLoadHistory }: {
+function UploadPanelInline({ jobState, onJobSubmitted, historyJobs, onLoadHistory, onOpenModelConfig }: {
   jobState: SharedJobState; wsConnected: boolean;
   onJobSubmitted: (jid: string, nid: string) => void;
   historyJobs: Array<{ job_id: string; novel_title: string; review_status: string; created_at: string }>;
   onLoadHistory: (jid: string) => void;
+  onOpenModelConfig: () => void;
 }) {
   const isCompleted = jobState.reviewStatus === "completed";
   const [file, setFile] = useState<File | null>(null);
@@ -414,7 +415,7 @@ function UploadPanelInline({ jobState, onJobSubmitted, historyJobs, onLoadHistor
           <div className="p-4 rounded-lg border-2 border-dashed border-amber-400/60 bg-amber-50 text-center">
             <p className="text-sm font-semibold text-amber-700 mb-1">请先配置模型</p>
             <p className="text-xs text-amber-600 mb-3">需要设置 API Key、Base URL 和 Model Name 后才能上传小说</p>
-            <button onClick={() => setShowConfig(true)} className="px-4 py-1.5 rounded text-xs font-semibold bg-amber-500 text-white hover:bg-amber-600 transition-colors">
+            <button onClick={onOpenModelConfig} className="px-4 py-1.5 rounded text-xs font-semibold bg-amber-500 text-white hover:bg-amber-600 transition-colors">
               打开模型配置
             </button>
           </div>
