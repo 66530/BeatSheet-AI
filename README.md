@@ -4,8 +4,8 @@
 </h1>
 
 <p align="center">
-  <b>From Novel to Screenplay, From Story to Screen.</b><br/>
-  <sub>AI-NUSS 3.0 — Novel to Screenplay Adaptation Engine</sub>
+  <b>从小说到剧本，从故事到银幕。</b><br/>
+  <sub>AI-NUSS 3.0 -- 小说至剧本智能改编引擎</sub>
 </p>
 
 <p align="center">
@@ -24,40 +24,40 @@
 
 ---
 
-## Overview
+## 项目概述
 
-**NovaDirector AI** is a full-stack AI application that automatically adapts novels into professional screenplays. Powered by a multi-agent LangGraph pipeline and any OpenAI-compatible LLM (DeepSeek, OpenAI, OpenRouter, etc.), it transforms raw novel text through seven specialized AI agents — from narrative analysis and character disambiguation to scene segmentation, beat extraction, and director-level cinematic guidance.
+**NovaDirector AI** 是一款全栈 AI 应用，能够将小说自动改编为专业剧本。系统基于 LangGraph 多智能体流水线架构，支持任意兼容 OpenAI 接口的大语言模型（DeepSeek、OpenAI、OpenRouter 等），通过七个专项 AI 智能体协同工作，将原始小说文本依次完成叙事分析、角色消歧、场景切分、节拍提取以及导演级影视化指导，最终输出结构化剧本。
 
-The system produces studio-ready output: numbered scenes with dramatic beats, character constraints, camera plans, lighting directions, and emotional tone — all viewable in a real-time director console.
+系统产出达到专业制作标准：包含编号场景、戏剧节拍、角色行为约束、镜头规划、灯光指导和情绪基调，全部可在实时导演控制台中查看。
 
 <table>
 <tr>
 <td width="50%">
 
-### What It Does
-- **Upload a novel** (.txt / .docx / .pdf) and receive a complete screenplay
-- **7-stage AI pipeline** with real-time WebSocket progress tracking
-- **Character disambiguation** with confidence scoring and alias resolution
-- **Scene segmentation** by 5 rule types plus AI enrichment
-- **Director copilot** — camera plans, lighting, music per scene
-- **Real-time dashboard** with quality metrics and health scores
+### 核心能力
+- **上传小说**（.txt / .docx / .pdf）即可获得完整剧本
+- **七阶段 AI 流水线**，WebSocket 实时推送进度
+- **角色消歧**，支持别名合并与置信度评分
+- **场景切分**，五种规则类型外加 AI 语义增强
+- **导演副驾驶**，逐场景生成镜头、灯光、配乐方案
+- **实时数据看板**，展示质量指标与健康度评分
 
 </td>
 <td width="50%">
 
-### Architecture at a Glance
+### 架构概览
 
 ```
-Novel -> [Parser] -> [Narrative Analyzer] -> [Story Bible]
-  -> [Character Resolver] -> [Scene Segmenter]
-  -> [Screenplay Generator] -> [Director Agent]
-  -> Structured Screenplay
+小说 -> [文档解析] -> [叙事分析] -> [故事圣经]
+  -> [角色消歧] -> [场景切分]
+  -> [剧本生成] -> [导演分析]
+  -> 结构化剧本输出
 ```
 
-- **LangGraph DAG** orchestrates 7 agent nodes
-- **WebSocket** streams live events to the React frontend
-- **OpenAI-compatible** — BYO model (DeepSeek, GPT, etc.)
-- **Dual-mode**: AI-powered + deterministic fallback
+- **LangGraph 有向无环图** 编排七个智能体节点
+- **WebSocket** 实时推送事件至 React 前端
+- **兼容 OpenAI 接口** -- 用户自行选择模型供应商
+- **双模运行**：AI 调用与确定性规则回退并行
 
 </td>
 </tr>
@@ -65,47 +65,47 @@ Novel -> [Parser] -> [Narrative Analyzer] -> [Story Bible]
 
 ---
 
-## Key Features
+## 核心功能
 
 <table>
 <tr>
 <td width="33%">
 
-### Multi-Agent AI Pipeline
-6 specialized AI agents collaborate in a directed acyclic graph, each handling one stage of adaptation. Agents communicate via a shared LangGraph state object with full versioning and audit trails.
+### 多智能体 AI 流水线
+六个专项 AI 智能体在有向无环图中协作，每个负责改编流程的一个阶段。智能体之间通过共享的 LangGraph 状态对象通信，具备完整的版本控制与审计追踪能力。
 
-**Agents:**
-- `NarrativeAnalyzer` — Theme, genre, premise, conflict extraction
-- `BibleAgent` — World setting, organizations, global rules
-- `CharacterAgent` — Entity resolution, alias disambiguation, constraint building
-- `SceneAgent` — 5-type segmentation engine + AI enrichment
-- `ScreenplayAgent` — Beat extraction, dialogue/action generation
-- `DirectorAgent` — Camera plans, lighting, music, pacing per scene
-
-</td>
-<td width="33%">
-
-### Scene Segmentation Engine
-A deterministic 5-type scene boundary detector handles:
-- **Location Shift** — Physical scene changes
-- **Time Shift** — Same location, different time
-- **Flashback** — Memory/consciousness transitions
-- **Montage** — Spatial/temporal compression
-- **Simultaneous** — Parallel timeline events
-
-Plus a quality scoring system (25% structure + 20% character + 20% conflict + 15% action + 20% dialogue) with A-D grading.
+**智能体列表：**
+- `NarrativeAnalyzer` -- 主题、类型、前提、冲突提取
+- `BibleAgent` -- 世界观设定、组织架构、全局规则
+- `CharacterAgent` -- 实体识别、别名消歧、行为约束构建
+- `SceneAgent` -- 五类分场引擎 + AI 元数据增强
+- `ScreenplayAgent` -- 节拍提取、对白与动作生成
+- `DirectorAgent` -- 镜头规划、灯光、配乐、节奏指导
 
 </td>
 <td width="33%">
 
-### Director Copilot
-Post-generation cinematic analysis produces per-scene:
-- **Emotion** — suspense / romantic / action / mysterious / ...
-- **Visual Style** — crime_drama / sci_fi / historical / ...
-- **Camera Plan** — 3-5 shots (establishing, close_up, tracking, ...)
-- **Lighting** — descriptive lighting direction per scene
-- **Music** — score direction with emotional intent
-- **Pacing** — slow / medium / fast
+### 场景切分引擎
+确定性五类场景边界检测器，覆盖以下分场类型：
+- **场景转换** -- 物理地点发生变化
+- **时间推移** -- 同一地点时间跨越
+- **闪回插叙** -- 记忆与意识流回溯
+- **蒙太奇段落** -- 时空压缩与意象组接
+- **平行叙事** -- 多线同步事件
+
+内置质量评分体系（结构 25% + 角色互动 20% + 冲突 20% + 动作 15% + 对白 20%），按 A-D 等级评定。
+
+</td>
+<td width="33%">
+
+### 导演副驾驶
+生成完成后进行二次影视化分析，逐场景输出：
+- **情绪基调** -- 悬疑 / 浪漫 / 动作 / 神秘等
+- **视觉风格** -- 犯罪剧 / 科幻 / 历史 / 奇幻等
+- **镜头方案** -- 3 至 5 个镜头（全景、特写、跟拍等）
+- **灯光指导** -- 逐场景描述性灯光方案
+- **配乐方向** -- 带有情感意图的配乐建议
+- **叙事节奏** -- 慢 / 中 / 快
 
 </td>
 </tr>
@@ -113,220 +113,220 @@ Post-generation cinematic analysis produces per-scene:
 
 ---
 
-## Pipeline Workflow
+## 流水线工作流
 
 ```mermaid
 graph TD
-    A[Document Parser] -->|chapters| B[Narrative Analyzer]
-    B -->|theme, genre, conflict| C[Story Bible]
-    C -->|world, rules| D[Character Resolver]
-    D -->|confidence OK| E[Scene Segmenter]
-    D -->|low confidence| R[Human Review]
-    R -->|resolved| E
-    E -->|scenes| F[Beat + Screenplay Generator]
-    F -->|beats, dialogues| G[Director Agent]
-    G -->|camera, lighting, music| H[Completed]
+    A[文档解析] -->|章节| B[叙事分析]
+    B -->|主题、类型、冲突| C[故事圣经]
+    C -->|世界观、规则| D[角色消歧]
+    D -->|置信度通过| E[场景切分]
+    D -->|置信度不足| R[人工审核]
+    R -->|审核完成| E
+    E -->|场景列表| F[节拍与剧本生成]
+    F -->|节拍、对白| G[导演分析]
+    G -->|镜头、灯光、配乐| H[完成]
 
     style A fill:#1a1a2e,stroke:#16213e
     style H fill:#0f3460,stroke:#16213e
     style R fill:#e94560,stroke:#e94560
 ```
 
-| Stage | Agent | Progress | Output |
+| 阶段 | 负责智能体 | 进度 | 产出物 |
 |-------|-------|----------|--------|
-| **0. Parse** | Kernel (Rule-based) | 0-10% | Chapters, character count |
-| **1. Narrative** | `NarrativeAnalyzer` | 10-20% | Theme, genre, premise, conflict |
-| **2. Bible** | `BibleAgent` | 20-28% | World setting, organizations, rules |
-| **3. Characters** | `CharacterAgent` | 28-40% | Entity map, cast list, constraints |
-| **4. Scenes** | `SceneAgent` | 40-65% | Numbered scenes with metadata |
-| **5. Screenplay** | `ScreenplayAgent` | 65-95% | Beats, dialogues, actions |
-| **5.5. Director** | `DirectorAgent` | 93-98% | Per-scene cinematic guidance |
-| **6. Complete** | -- | 98-100% | Final structured screenplay |
+| **0. 解析** | 内核（规则引擎） | 0-10% | 章节划分、字数统计 |
+| **1. 叙事分析** | `NarrativeAnalyzer` | 10-20% | 主题、类型、前提、冲突 |
+| **2. 故事圣经** | `BibleAgent` | 20-28% | 世界观设定、组织、规则 |
+| **3. 角色消歧** | `CharacterAgent` | 28-40% | 实体映射、角色列表、行为约束 |
+| **4. 场景切分** | `SceneAgent` | 40-65% | 编号场景及元数据 |
+| **5. 剧本生成** | `ScreenplayAgent` | 65-95% | 节拍、对白、动作描述 |
+| **5.5. 导演分析** | `DirectorAgent` | 93-98% | 逐场景影视化指导 |
+| **6. 完成** | -- | 98-100% | 最终结构化剧本 |
 
 ---
 
-## Screenshots
+## 界面截图
 
 <p align="center">
-  <b>Director Console -- Workspace</b><br/>
-  <img src="docs/images/screenshot-workspace.png" alt="Workspace" width="80%" />
+  <b>导演控制台 -- 工作区</b><br/>
+  <img src="docs/images/screenshot-workspace.png" alt="工作区" width="80%" />
 </p>
 
 <details>
-<summary><b>More Screenshots (click to expand)</b></summary>
+<summary><b>更多截图（点击展开）</b></summary>
 
 <p align="center">
-  <b>Scene Workbench with Quality Dashboard</b><br/>
-  <img src="docs/images/screenshot-scenes.png" alt="Scene Workbench" width="80%" />
+  <b>场景工作台与质量看板</b><br/>
+  <img src="docs/images/screenshot-scenes.png" alt="场景工作台" width="80%" />
 </p>
 
 <p align="center">
-  <b>Character Relationship Graph</b><br/>
-  <img src="docs/images/screenshot-characters.png" alt="Character Graph" width="80%" />
+  <b>角色关系图谱</b><br/>
+  <img src="docs/images/screenshot-characters.png" alt="角色图谱" width="80%" />
 </p>
 
 <p align="center">
-  <b>Screenplay Viewer</b><br/>
-  <img src="docs/images/screenshot-screenplay.png" alt="Screenplay Viewer" width="80%" />
+  <b>剧本查看器</b><br/>
+  <img src="docs/images/screenshot-screenplay.png" alt="剧本查看器" width="80%" />
 </p>
 
 <p align="center">
-  <b>Model Configuration Panel</b><br/>
-  <img src="docs/images/screenshot-config.png" alt="Model Config" width="80%" />
+  <b>模型配置面板</b><br/>
+  <img src="docs/images/screenshot-config.png" alt="模型配置" width="80%" />
 </p>
 
 <p align="center">
-  <b>Upload and Processing Pipeline</b><br/>
-  <img src="docs/images/screenshot-upload.png" alt="Upload" width="80%" />
+  <b>上传与处理流水线</b><br/>
+  <img src="docs/images/screenshot-upload.png" alt="上传界面" width="80%" />
 </p>
 
 </details>
 
 ---
 
-## Quick Start
+## 快速开始
 
-### Prerequisites
+### 环境要求
 
-- **Python** 3.11+
-- **Node.js** 18+ with npm
-- **Docker** (optional -- for PostgreSQL, Redis, Qdrant)
-- An API key from any OpenAI-compatible provider
+- **Python** 3.11 及以上版本
+- **Node.js** 18 及以上版本（含 npm）
+- **Docker**（可选 -- 用于运行 PostgreSQL、Redis、Qdrant）
+- 任意兼容 OpenAI 接口的 API 密钥
 
-### One-Click Launch
+### 一键启动
 
 ```bash
-# Clone the repository
+# 克隆仓库
 git clone https://github.com/66530/BeatSheet-AI.git
 cd BeatSheet-AI/ai_nuss_workspace
 
-# One-click start (installs deps + starts backend & frontend)
+# 一键启动（自动安装依赖并启动前后端）
 python run.py
 ```
 
-Then open **http://localhost:3000** -- the Director Console will open automatically.
+启动后访问 **http://localhost:3000**，导演控制台将自动打开。
 
-### Manual Start
+### 手动启动
 
 ```bash
-# Terminal 1 -- Backend
+# 终端 1 -- 后端
 cd ai_nuss_backend
 pip install -r requirements.txt
 uvicorn app.main:app --host 0.0.0.0 --port 8000
 
-# Terminal 2 -- Frontend
+# 终端 2 -- 前端
 cd ai_nuss_frontend
 npm install --legacy-peer-deps
 npm run dev
 ```
 
-### Full Stack with Docker
+### Docker 全栈部署
 
 ```bash
-# Start all services (PostgreSQL, Redis, Qdrant, Backend, Frontend, Nginx)
+# 启动全部服务（PostgreSQL、Redis、Qdrant、后端、前端、Nginx）
 cd ai_nuss_workspace/deployment
 docker compose up -d
 ```
 
 ---
 
-## Configuration
+## 模型配置
 
-### Model Setup
+### 接入大语言模型
 
-NovaDirector AI works with **any OpenAI-compatible API**. The model configuration is set in the browser UI and stored locally (never sent to our servers).
+NovaDirector AI 兼容**任意 OpenAI 接口格式的 API**。模型配置在浏览器界面中完成，数据存储在本地浏览器，不会发送至任何外部服务器。
 
 <p align="center">
-  <img src="docs/images/screenshot-config.png" alt="Model Config Panel" width="60%" />
+  <img src="docs/images/screenshot-config.png" alt="模型配置面板" width="60%" />
 </p>
 
-**Supported providers out of the box:**
+**内置支持的供应商：**
 
-| Provider | Base URL | Recommended Model |
+| 供应商 | Base URL | 推荐模型 |
 |----------|----------|-------------------|
 | **DeepSeek** | `https://api.deepseek.com` | `deepseek-chat` |
 | **OpenAI** | `https://api.openai.com/v1` | `gpt-4o-mini` |
 | **OpenRouter** | `https://openrouter.ai/api/v1` | `openai/gpt-4o` |
 | **SiliconFlow** | `https://api.siliconflow.cn/v1` | `Qwen/Qwen2.5-7B-Instruct` |
 | **Moonshot** | `https://api.moonshot.cn/v1` | `moonshot-v1-8k` |
-| **Zhipu** | `https://open.bigmodel.cn/api/paas/v4` | `glm-4-flash` |
-| **Aliyun Bailian** | `https://dashscope.aliyuncs.com/compatible-mode/v1` | `qwen-max` |
-| **Custom** | *Your endpoint* | *Your model* |
+| **智谱** | `https://open.bigmodel.cn/api/paas/v4` | `glm-4-flash` |
+| **阿里百炼** | `https://dashscope.aliyuncs.com/compatible-mode/v1` | `qwen-max` |
+| **自定义** | *用户自定义地址* | *用户自定义模型* |
 
-### Environment Variables
+### 环境变量
 
 ```bash
-# .env -- backend configuration
-STUB_MODE=false           # Set to true for offline/demo mode (no API calls)
-DEBUG=true                # Enable debug mode
-DATABASE_URL=...          # PostgreSQL connection string (Docker provides default)
-REDIS_HOST=localhost      # Redis host
-QDRANT_URL=...            # Qdrant vector DB URL
+# .env 文件 -- 后端配置
+STUB_MODE=false           # 设为 true 启用离线/演示模式，不调用 API
+DEBUG=true                # 启用调试模式
+DATABASE_URL=...          # PostgreSQL 连接字符串（Docker 部署时已预设）
+REDIS_HOST=localhost      # Redis 主机地址
+QDRANT_URL=...            # Qdrant 向量数据库地址
 ```
 
 ---
 
-## API Reference
+## API 参考
 
-| Method | Endpoint | Description |
+| 方法 | 端点 | 说明 |
 |--------|----------|-------------|
-| `GET` | `/health` | Health check (no auth, no DB) |
-| `GET` | `/docs` | Swagger UI |
-| `POST` | `/api/v1/auth/login` | User login |
-| `POST` | `/api/v1/jobs/submit` | Submit novel for adaptation |
-| `GET` | `/api/v1/jobs/{job_id}/status` | Get job status + full state |
-| `GET` | `/api/v1/jobs/` | List all jobs (history) |
-| `POST` | `/api/v1/jobs/{job_id}/review/bible-character` | Review character disambiguation |
-| `POST` | `/api/v1/jobs/{job_id}/review/scenes` | Review scene boundaries |
-| `POST` | `/api/v1/model/test` | Test model connection |
-| `WS` | `/api/v1/ws/jobs/{job_id}/stream` | Real-time job progress stream |
+| `GET` | `/health` | 健康检查（无需认证，不依赖数据库） |
+| `GET` | `/docs` | Swagger 交互式文档 |
+| `POST` | `/api/v1/auth/login` | 用户登录 |
+| `POST` | `/api/v1/jobs/submit` | 提交小说开始改编 |
+| `GET` | `/api/v1/jobs/{job_id}/status` | 查询任务状态与完整数据 |
+| `GET` | `/api/v1/jobs/` | 列出全部历史任务 |
+| `POST` | `/api/v1/jobs/{job_id}/review/bible-character` | 审核角色消歧结果 |
+| `POST` | `/api/v1/jobs/{job_id}/review/scenes` | 审核场景边界划分 |
+| `POST` | `/api/v1/model/test` | 测试模型连接状态 |
+| `WS` | `/api/v1/ws/jobs/{job_id}/stream` | 实时任务进度推送 |
 
-### WebSocket Events
+### WebSocket 事件类型
 
 ```
-state_snapshot    -> Full state on connect
-progress_update   -> Stage and percentage change
-scene_refining    -> Current scene being enriched
-scene_refined     -> Scene enrichment complete
-character_found   -> New character identified
-beat_generated    -> Beat extracted from scene
-director_complete -> Director analysis finished
-pipeline_complete -> All stages done
-pipeline_error    -> Error with traceback
+state_snapshot    -> 连接建立时的完整状态快照
+progress_update   -> 阶段与百分比变更通知
+scene_refining    -> 正在增强的场景信息
+scene_refined     -> 场景增强完成通知
+character_found   -> 新识别到的角色信息
+beat_generated    -> 从场景中提取到的节拍
+director_complete -> 导演分析阶段完成
+pipeline_complete -> 全部流程执行完毕
+pipeline_error    -> 错误信息及堆栈追踪
 ```
 
 ---
 
-## Project Structure
+## 项目结构
 
 ```
 BeatSheet-AI/
 ├── README.md
 └── ai_nuss_workspace/
-    ├── run.py                          # One-click launcher
-    ├── run.sh                          # Linux/macOS launcher
-    ├── run.bat                         # Windows launcher
+    ├── run.py                          # 一键启动脚本
+    ├── run.sh                          # Linux/macOS 启动脚本
+    ├── run.bat                         # Windows 启动脚本
     │
-    ├── ai_nuss_backend/                # FastAPI + LangGraph Backend
+    ├── ai_nuss_backend/                # FastAPI + LangGraph 后端
     │   ├── app/
-    │   │   ├── main.py                 # Entry point, lifespan, CORS
+    │   │   ├── main.py                 # 入口文件、生命周期、CORS
     │   │   ├── api/v1/
-    │   │   │   ├── router.py           # API aggregator
+    │   │   │   ├── router.py           # API 路由聚合
     │   │   │   └── endpoints/
-    │   │   │       ├── auth.py         # Auth endpoints
-    │   │   │       ├── jobs.py         # Job CRUD + model test
-    │   │   │       └── websocket.py    # Real-time streaming
+    │   │   │       ├── auth.py         # 认证接口
+    │   │   │       ├── jobs.py         # 任务 CRUD 与模型测试
+    │   │   │       └── websocket.py    # 实时数据推送
     │   │   ├── core/
-    │   │   │   ├── config.py           # Settings + weight matrix
-    │   │   │   ├── kernel.py           # Rule-based processing
-    │   │   │   ├── job_store.py        # In-memory state store
-    │   │   │   ├── processor.py        # Pipeline orchestrator
-    │   │   │   └── llm_factory.py      # OpenAI-compatible client
+    │   │   │   ├── config.py           # 全局配置与权重矩阵
+    │   │   │   ├── kernel.py           # 规则引擎处理逻辑
+    │   │   │   ├── job_store.py        # 内存状态存储
+    │   │   │   ├── processor.py        # 流水线编排器
+    │   │   │   └── llm_factory.py      # OpenAI 兼容客户端工厂
     │   │   ├── graph/
-    │   │   │   ├── state.py            # AINUSSState TypedDict
-    │   │   │   ├── workflow.py         # LangGraph DAG definition
+    │   │   │   ├── state.py            # AINUSSState 类型定义
+    │   │   │   ├── workflow.py         # LangGraph 有向无环图定义
     │   │   │   └── agents/
-    │   │   │       ├── base.py         # BaseAgent with fallback
+    │   │   │       ├── base.py         # 基类智能体，含回退机制
     │   │   │       ├── narrative_analyzer.py
     │   │   │       ├── bible_agent.py
     │   │   │       ├── character_agent.py
@@ -334,35 +334,35 @@ BeatSheet-AI/
     │   │   │       ├── screenplay_agent.py
     │   │   │       └── director_agent.py
     │   │   └── schemas/
-    │   │       ├── screenplay_yaml.py  # Output schema
-    │   │       └── workflow.py         # WebSocket frame schema
+    │   │       ├── screenplay_yaml.py  # 剧本输出结构定义
+    │   │       └── workflow.py         # WebSocket 帧结构定义
     │   ├── evaluation/
-    │   │   └── gold_standard/          # Benchmark datasets
+    │   │   └── gold_standard/          # 基准评测数据集
     │   └── requirements.txt
     │
-    ├── ai_nuss_frontend/               # Next.js 14 Frontend
+    ├── ai_nuss_frontend/               # Next.js 14 前端
     │   ├── app/
-    │   │   ├── layout.tsx              # Root layout + metadata
-    │   │   ├── page.tsx                # Home (redirect to workspace)
-    │   │   ├── api_client.ts           # HTTP + WebSocket client
-    │   │   ├── globals.css             # Design system + theme
+    │   │   ├── layout.tsx              # 根布局与元数据
+    │   │   ├── page.tsx                # 首页（重定向至工作区）
+    │   │   ├── api_client.ts           # HTTP 与 WebSocket 客户端
+    │   │   ├── globals.css             # 设计系统与主题样式
     │   │   ├── contexts/
-    │   │   │   └── AuthContext.tsx      # Auth state management
+    │   │   │   └── AuthContext.tsx      # 认证状态管理
     │   │   ├── components/
-    │   │   │   └── HeaderNav.tsx        # Navigation bar
+    │   │   │   └── HeaderNav.tsx        # 顶部导航栏
     │   │   └── workspace/
-    │   │       ├── page.tsx             # Main workspace (tabs)
-    │   │       ├── scene_editor.tsx      # Scene editing
+    │   │       ├── page.tsx             # 主工作区页面（多标签页）
+    │   │       ├── scene_editor.tsx      # 场景编辑器
     │   │       ├── scene_distribution.tsx
-    │   │       ├── character_graph.tsx   # Relationship graph
-    │   │       ├── screenplay_viewer.tsx # Screenplay display
-    │   │       ├── ModelConfigPanel.tsx  # LLM configuration
-    │   │       └── PrintScreenplay.tsx   # Export
+    │   │       ├── character_graph.tsx   # 角色关系图谱
+    │   │       ├── screenplay_viewer.tsx # 剧本查看器
+    │   │       ├── ModelConfigPanel.tsx  # 大语言模型配置面板
+    │   │       └── PrintScreenplay.tsx   # 剧本导出
     │   ├── package.json
     │   └── next.config.js
     │
     └── deployment/
-        ├── docker-compose.yml           # Full stack orchestration
+        ├── docker-compose.yml           # 全栈编排配置
         └── docker/
             ├── backend.Dockerfile
             ├── frontend.Dockerfile
@@ -371,32 +371,32 @@ BeatSheet-AI/
 
 ---
 
-## Design Philosophy
+## 设计理念
 
-### Graceful Degradation
-Every AI agent has a **dual-path architecture**: `_run_real()` calls the configured LLM, `_run_mock()` provides deterministic rule-based fallback. If the API fails, the system continues with reasonable defaults -- the pipeline never crashes.
+### 优雅降级
+每个 AI 智能体均采用**双路径架构**：`_run_real()` 调用用户配置的大语言模型，`_run_mock()` 提供基于确定性规则的回退方案。即使 API 调用失败，系统仍以合理默认值继续运行 -- 流水线不会因单点故障而崩溃。
 
-### State Versioning
-All state mutations are versioned (`story_bible_version`, `entity_map_version`, `scene_version`, `director_version`) and atomically logged to an `event_log` audit trail.
+### 状态版本化
+所有状态变更均带版本号（`story_bible_version`、`entity_map_version`、`scene_version`、`director_version`），并原子化记录至 `event_log` 审计追踪日志。
 
-### Bring Your Own Model
-No vendor lock-in. The system accepts any OpenAI-compatible API endpoint. Model configuration is per-job, stored client-side, and tested before use.
+### 用户自主选择模型
+不绑定任何特定模型供应商。系统接受任意兼容 OpenAI 接口的 API 端点。模型配置按任务独立设置，存储在客户端浏览器中，使用前先行测试连通性。
 
-### Real-Time First
-WebSocket streaming with exponential backoff reconnect ensures the director console always shows live progress. State reconciliation on reconnect prevents data loss.
+### 实时优先
+WebSocket 实时推送配合指数退避重连机制，确保导演控制台始终展示最新进度。断线重连时自动执行状态对账，防止数据丢失。
 
 ---
 
-## Evaluation
+## 评测基准
 
-The project includes gold-standard benchmark datasets for evaluating adaptation quality:
+项目内置金标准评测数据集，用于评估改编质量：
 
 ```
 evaluation/gold_standard/
 ├── novel_001/
-│   ├── entities.json    # Ground-truth characters
-│   ├── scenes.json      # Expected scene boundaries
-│   └── beats.json       # Expected dramatic beats
+│   ├── entities.json    # 标准角色标注
+│   ├── scenes.json      # 预期场景边界
+│   └── beats.json       # 预期戏剧节拍
 └── novel_002/
     ├── entities.json
     ├── scenes.json
@@ -405,57 +405,57 @@ evaluation/gold_standard/
 
 ---
 
-## Tech Stack
+## 技术栈
 
 <table>
 <tr>
-<th>Layer</th>
-<th>Technology</th>
-<th>Purpose</th>
+<th>层级</th>
+<th>技术</th>
+<th>用途</th>
 </tr>
 <tr>
-<td>Frontend</td>
+<td>前端</td>
 <td>Next.js 14, React 18, TypeScript, Tailwind CSS</td>
-<td>Director Console UI</td>
+<td>导演控制台界面</td>
 </tr>
 <tr>
-<td>Backend</td>
+<td>后端</td>
 <td>FastAPI, Uvicorn, Python 3.11+</td>
-<td>Async REST + WebSocket API</td>
+<td>异步 REST 与 WebSocket API</td>
 </tr>
 <tr>
-<td>AI Orchestration</td>
+<td>AI 编排</td>
 <td>LangGraph, LangGraph Checkpoint</td>
-<td>Multi-agent DAG workflow</td>
+<td>多智能体有向无环图工作流</td>
 </tr>
 <tr>
-<td>LLM</td>
-<td>OpenAI SDK (compatible), Any provider</td>
-<td>Per-agent LLM calls</td>
+<td>大语言模型</td>
+<td>OpenAI SDK（兼容模式），任意供应商</td>
+<td>各智能体的语言模型调用</td>
 </tr>
 <tr>
-<td>Database</td>
+<td>数据库</td>
 <td>PostgreSQL 15, Redis 7</td>
-<td>State persistence and pub/sub</td>
+<td>状态持久化与发布订阅</td>
 </tr>
 <tr>
-<td>Vector DB</td>
+<td>向量数据库</td>
 <td>Qdrant v1.8</td>
-<td>Semantic character recall</td>
+<td>角色语义检索</td>
 </tr>
 <tr>
-<td>Container</td>
+<td>容器化</td>
 <td>Docker, Docker Compose, Nginx</td>
-<td>Production deployment</td>
+<td>生产环境部署</td>
 </tr>
 <tr>
-<td>Real-time</td>
-<td>WebSocket (native) + exponential backoff</td>
-<td>Live progress streaming</td>
+<td>实时通信</td>
+<td>WebSocket（原生）+ 指数退避重连</td>
+<td>实时进度推送</td>
 </tr>
 <tr>
-<td>Auth</td>
-<td>PyJWT, Browser localStorage</td>
-<td>Token-based authentication</td>
+<td>认证</td>
+<td>PyJWT, 浏览器 localStorage</td>
+<td>基于令牌的身份认证</td>
 </tr>
 </table>
