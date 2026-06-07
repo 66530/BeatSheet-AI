@@ -6,8 +6,7 @@ AI-NUSS 3.0 — Narrative Analyzer (叙事分析器)
 import json
 import asyncio
 from typing import Dict, Any
-from app.graph.agents.base import BaseAgent, get_deepseek_client
-from app.core.config import settings
+from app.graph.agents.base import BaseAgent
 
 
 NARRATIVE_ANALYSIS_PROMPT = """你是一位资深剧本分析师。请分析以下小说文本，提取叙事核心要素。
@@ -52,11 +51,12 @@ class NarrativeAnalyzer(BaseAgent[Dict[str, Any]]):
                 text_parts.append(f"=== 第{ch.get('chapter_index', i+1)}章 {ch.get('title', '')} ===\n{ch.get('raw_text', '')[:2000]}")
         novel_text = "\n\n".join(text_parts)
 
-        client = get_deepseek_client()
+        client = self._get_raw_client(state)
+        model = self._get_model_name(state)
         try:
             resp = await asyncio.wait_for(
                 client.chat.completions.create(
-                    model=settings.DEEPSEEK_MODEL,
+                    model=model,
                     messages=[
                         {"role": "system", "content": self.system_prompt},
                         {"role": "user", "content": f"请分析以下小说：\n\n{novel_text[:6000]}\n\n只返回JSON。"},

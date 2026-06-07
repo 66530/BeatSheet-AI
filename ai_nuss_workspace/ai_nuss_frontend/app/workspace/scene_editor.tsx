@@ -57,8 +57,17 @@ function SceneCard({ data, index, isExpanded, onToggle }: { data?: Partial<RichS
     source_paragraphs: ((data as Record<string,unknown>)?.source_paragraphs as string[]) || [],
   };
 
-  const modeLabel: Record<string, string> = { sequential: "顺序", flashback: "闪回", dream: "梦境", parallel: "并行", montage: "蒙太奇" };
-  const modeColor: Record<string, string> = { sequential: "bg-blue-500/20 text-blue-400", flashback: "bg-purple-500/20 text-purple-400", dream: "bg-indigo-500/20 text-indigo-400", parallel: "bg-cyan-500/20 text-cyan-400", montage: "bg-pink-500/20 text-pink-400" };
+  const modeLabel: Record<string, string> = {
+    sequential: "顺序叙事", location_shift: "地点转场", time_shift: "时间转场",
+    flashback: "闪回", dream: "梦境", parallel: "并行叙事", montage: "蒙太奇",
+    simultaneous: "平行时空",
+  };
+  const modeColor: Record<string, string> = {
+    sequential: "bg-blue-500/20 text-blue-400", location_shift: "bg-cyan-500/20 text-cyan-400",
+    time_shift: "bg-teal-500/20 text-teal-400", flashback: "bg-purple-500/20 text-purple-400",
+    dream: "bg-indigo-500/20 text-indigo-400", parallel: "bg-pink-500/20 text-pink-400",
+    montage: "bg-amber-500/20 text-amber-400", simultaneous: "bg-rose-500/20 text-rose-400",
+  };
   const conflictColor = s.conflict_level >= 0.7 ? "text-red-400" : s.conflict_level >= 0.4 ? "text-yellow-400" : "text-green-400";
 
   return (

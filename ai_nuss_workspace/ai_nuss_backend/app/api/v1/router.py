@@ -31,3 +31,10 @@ api_v1_router.include_router(
     prefix="/ws",
     tags=["WebSocket"],
 )
+
+# === Model Configuration Test ===
+from app.api.v1.endpoints.jobs import test_model_connection, ModelTestRequest
+
+@api_v1_router.post("/model/test", tags=["Model"])
+async def model_test(req: ModelTestRequest):
+    return await test_model_connection(req)

@@ -18,6 +18,7 @@ async def process_job(job_id: str) -> None:
 
     text = job.file_text or ""
     title = job.novel_title or (job.file_name or "未命名")
+    mc = job.state.get("model_config", {})  # User's LLM config
 
     try:
         # ═══════════════════════════════════════════
@@ -37,7 +38,7 @@ async def process_job(job_id: str) -> None:
         await _progress(job_id, "analyzing", 12, "正在分析叙事核心要素...", "narrative")
         from app.graph.agents.narrative_analyzer import NarrativeAnalyzer
         na = NarrativeAnalyzer()
-        na_result = await na.run({"chapters": chapters, "master_cast_list": job.state.get("master_cast_list", [])})
+        na_result = await na.run({"chapters": chapters, "master_cast_list": job.state.get("master_cast_list", []), "model_config": mc})
         story_analysis = {}
         if na_result.success and na_result.data:
             story_analysis = na_result.data.get("story_analysis", {})
@@ -52,7 +53,7 @@ async def process_job(job_id: str) -> None:
         await _progress(job_id, "analyzing", 22, "正在构建故事圣经...", "bible")
         from app.graph.agents.bible_agent import BibleAgent
         ba = BibleAgent()
-        ba_result = await ba.run({"chapters": chapters[:2], "story_bible": job.state.get("story_bible", {})})
+        ba_result = await ba.run({"chapters": chapters[:2], "story_bible": job.state.get("story_bible", {}), "model_config": mc})
         if ba_result.success and ba_result.data:
             await store.update_state(job_id, {"story_bible": ba_result.data.get("story_bible", {})})
         await _progress(job_id, "analyzing", 28, "故事圣经完成", "bible")
@@ -67,6 +68,7 @@ async def process_job(job_id: str) -> None:
             "chapters": chapters, "story_bible": job.state.get("story_bible", {}),
             "entity_map": job.state.get("entity_map", {}),
             "master_cast_list": job.state.get("master_cast_list", []),
+            "model_config": mc,
         })
         cast = []
         entity_map = {}
@@ -87,6 +89,8 @@ async def process_job(job_id: str) -> None:
         # ═══════════════════════════════════════════
         from app.graph.agents.scene_agent import SceneAgent
         sa = SceneAgent()
+        # Inject model_config for AI enrichment
+        sa.set_model_config({"model_config": job.state.get("model_config", {})})
 
         # — 4a: 确定性切分 (40% → 45%, <0.1s) —
         await _progress(job_id, "analyzing", 42, "确定性引擎切分中...", "scenes")
@@ -148,6 +152,7 @@ async def process_job(job_id: str) -> None:
         spa_result = await spa.run({
             "scenes": scenes, "master_cast_list": cast,
             "story_analysis": story_analysis, "entity_map": entity_map,
+            "model_config": mc,
         })
 
         all_beats = []
@@ -225,7 +230,49 @@ async def process_job(job_id: str) -> None:
             })
 
         # ═══════════════════════════════════════════
-        # Stage 6: 完成 (95% → 100%)
+        # Stage 5.5: AI导演分析 (93% → 98%)
+        # ═══════════════════════════════════════════
+        await _progress(job_id, "generating", 93, "AI导演助手分析中...", "director")
+        await store.add_event(job_id, "director_start", {
+            "message": f"开始导演分析: {len(scenes)}场",
+            "total_scenes": len(scenes),
+        })
+
+        from app.graph.agents.director_agent import DirectorAgent
+        da = DirectorAgent()
+        da_result = await da.run({"scenes": scenes, "model_config": mc})
+
+        director_stats = {"total": len(scenes), "generated": 0, "failed": 0}
+        if da_result.success and da_result.data:
+            updated_scenes = da_result.data.get("scenes", [])
+            # 将 director_note 写回原始 scenes（保持其他字段不变）
+            for us in updated_scenes:
+                for s in scenes:
+                    if s.get("scene_id") == us.get("scene_id"):
+                        s["director_note"] = us.get("director_note")
+                        break
+            director_stats = da_result.data.get("_director_stats", director_stats)
+        elif da_result.fallback_data and da_result.fallback_data.get("data"):
+            fd = da_result.fallback_data["data"]
+            updated_scenes = fd.get("scenes", [])
+            for us in updated_scenes:
+                for s in scenes:
+                    if s.get("scene_id") == us.get("scene_id"):
+                        s["director_note"] = us.get("director_note")
+                        break
+
+        await store.update_state(job_id, {"scenes": scenes, "director_version": 1})
+        await _progress(job_id, "generating", 98,
+            f"AI导演分析完成: {director_stats.get('generated',0)}/{director_stats.get('total',0)}场",
+            "director")
+        await store.add_event(job_id, "director_complete", {
+            "message": f"导演分析完成: {director_stats.get('generated',0)}/{director_stats.get('total',0)}场",
+            "generated": director_stats.get("generated", 0),
+            "failed": director_stats.get("failed", 0),
+        })
+
+        # ═══════════════════════════════════════════
+        # Stage 6: 完成 (98% → 100%)
         # ═══════════════════════════════════════════
         ep_count = len(screenplay.get("episodes", []))
         sc_count = len(scenes)

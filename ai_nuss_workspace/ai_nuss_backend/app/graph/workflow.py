@@ -112,6 +112,35 @@ async def node_handle_review(state: AINUSSState) -> AINUSSState:
     return state
 
 
+async def node_director_analysis(state: AINUSSState) -> AINUSSState:
+    """
+    Node: AI Director Copilot (Stage 5.5).
+    Runs after beats/screenplay generation.
+    Generates per-scene director_note with cinematic guidance.
+    """
+    from app.graph.agents.director_agent import DirectorAgent
+    agent = DirectorAgent()
+    output = await agent.run(dict(state))
+    if output.success and output.data:
+        updated_scenes = output.data.get("scenes", [])
+        for us in updated_scenes:
+            for s in state.get("scenes", []):
+                if s.get("scene_id") == us.get("scene_id"):
+                    s["director_note"] = us.get("director_note")
+                    break
+        state["director_version"] = output.data.get("director_version", 1)
+    elif output.fallback_data and output.fallback_data.get("data"):
+        fd = output.fallback_data["data"]
+        updated_scenes = fd.get("scenes", [])
+        for us in updated_scenes:
+            for s in state.get("scenes", []):
+                if s.get("scene_id") == us.get("scene_id"):
+                    s["director_note"] = us.get("director_note")
+                    break
+        state["director_version"] = fd.get("director_version", 1)
+    return state
+
+
 # ═══════════════════════════════════════════════════════════════════════
 # Conditional Edge Routers
 # ═══════════════════════════════════════════════════════════════════════
@@ -161,6 +190,8 @@ def build_ainuss_graph():
                                                         │
                                               extract_beats_and_screenplay
                                                         │
+                                              director_analysis
+                                                        │
                                                     [completed]
 
     PHASE P2: Full graph with LangGraph.
@@ -177,6 +208,7 @@ def build_ainuss_graph():
         workflow.add_node("resolve_characters", node_resolve_characters)
         workflow.add_node("segment_scenes", node_segment_scenes)
         workflow.add_node("extract_beats_and_screenplay", node_extract_beats_and_screenplay)
+        workflow.add_node("director_analysis", node_director_analysis)
         workflow.add_node("handle_review", node_handle_review)
 
         # Set entry point
@@ -208,7 +240,8 @@ def build_ainuss_graph():
 
         # Linear tail
         workflow.add_edge("segment_scenes", "extract_beats_and_screenplay")
-        workflow.add_edge("extract_beats_and_screenplay", END)
+        workflow.add_edge("extract_beats_and_screenplay", "director_analysis")
+        workflow.add_edge("director_analysis", END)
 
         return workflow.compile()
 

@@ -14,8 +14,7 @@ import json
 import asyncio
 from typing import Dict, Any, List, Tuple, Optional
 from dataclasses import dataclass
-from app.graph.agents.base import BaseAgent, get_deepseek_client
-from app.core.config import settings
+from app.graph.agents.base import BaseAgent
 
 
 # ═══════════════════════════════════════════════════════════
@@ -156,6 +155,8 @@ class LocationExtractor:
 
 class SceneAgent(BaseAgent[Dict[str, Any]]):
 
+    _model_state: Optional[Dict[str, Any]] = None
+
     @property
     def agent_name(self) -> str:
         return "scene_agent"
@@ -163,6 +164,10 @@ class SceneAgent(BaseAgent[Dict[str, Any]]):
     @property
     def system_prompt(self) -> str:
         return "你是一位影视分场专家。根据文本识别场景边界，判断 timeline_mode，提取出场角色。"
+
+    def set_model_config(self, state: Dict[str, Any]):
+        """从 processor 注入 model_config（enrich_single_scene 没有 state 参数）"""
+        self._model_state = state
 
     # ═══════════════════════════════════
     # Public API (processor 直接调用，支持进度报告)
@@ -184,6 +189,7 @@ class SceneAgent(BaseAgent[Dict[str, Any]]):
     # ═══════════════════════════════════
 
     async def _run_real(self, state: Dict[str, Any]) -> Dict[str, Any]:
+        self._model_state = state
         chapters = state.get("chapters", [])
         scenes = self._segment(chapters, state.get("entity_map", {}), state.get("story_analysis", {}))
         if not scenes:
@@ -482,12 +488,14 @@ class SceneAgent(BaseAgent[Dict[str, Any]]):
         text = scene.get("raw_scene_text_block", "")
         if len(text) < 50:
             return False
-        client = get_deepseek_client()
+        state = self._model_state or {}
+        client = self._get_raw_client(state)
+        model = self._get_model_name(state)
         prompt = f"""分析场景文本，返回JSON: {{"summary":"场景摘要(保留原文细节,不限字数)","purpose":"戏剧目的","emotional_tone":"情绪基调"}}
 文本: {text[:1500]}"""
         try:
             resp = await asyncio.wait_for(
-                client.chat.completions.create(model=settings.DEEPSEEK_MODEL,
+                client.chat.completions.create(model=model,
                     messages=[{"role":"user","content":prompt}],
                     temperature=0.4, max_tokens=250, timeout=12.0),
                 timeout=18.0)

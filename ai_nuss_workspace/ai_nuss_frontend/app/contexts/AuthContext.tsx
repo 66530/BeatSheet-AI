@@ -28,10 +28,9 @@ interface AuthContextValue extends AuthState {
 const AuthContext = createContext<AuthContextValue | null>(null);
 
 const AUTH_STORAGE_KEY = "ai_nuss_auth";
-const API_BASE = "";  // Use Next.js rewrite proxy
 
 // ═══════════════════════════════════════════════════════════
-// Helpers
+// Helpers (仅在客户端调用)
 // ═══════════════════════════════════════════════════════════
 
 function loadAuthFromStorage(): AuthState {
@@ -58,46 +57,63 @@ function loadAuthFromStorage(): AuthState {
 }
 
 function saveAuthToStorage(username: string, token: string) {
-  localStorage.setItem(
-    AUTH_STORAGE_KEY,
-    JSON.stringify({ username, token })
-  );
+  if (typeof window === "undefined") return;
+  localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify({ username, token }));
 }
 
 function clearAuthFromStorage() {
+  if (typeof window === "undefined") return;
   localStorage.removeItem(AUTH_STORAGE_KEY);
 }
+
+// ═══════════════════════════════════════════════════════════
+// 初始状态 — 服务端和客户端必须完全一致以避免 Hydration 错误
+// ═══════════════════════════════════════════════════════════
+
+const INITIAL_AUTH_STATE: AuthState = {
+  isAuthenticated: false,
+  username: null,
+  token: null,
+  isLoading: true, // 服务端和水合时统一为 loading，避免 DOM 不一致
+};
 
 // ═══════════════════════════════════════════════════════════
 // Provider
 // ═══════════════════════════════════════════════════════════
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [auth, setAuth] = useState<AuthState>(loadAuthFromStorage);
+  // 关键修复：服务端和客户端使用相同的初始状态
+  const [auth, setAuth] = useState<AuthState>(INITIAL_AUTH_STATE);
 
-  // Verify token on mount
+  // 水合完成后（仅客户端），从 localStorage 恢复登录态
   useEffect(() => {
-    if (!auth.token) {
-      setAuth((prev) => ({ ...prev, isLoading: false }));
-      return;
+    const stored = loadAuthFromStorage();
+    if (stored.token && stored.username) {
+      // 验证 token 有效性
+      fetch("/api/v1/auth/me", {
+        headers: { Authorization: `Bearer ${stored.token}` },
+      })
+        .then((res) => {
+          if (!res.ok) throw new Error("Token invalid");
+          return res.json();
+        })
+        .then(() => {
+          setAuth({
+            isAuthenticated: true,
+            username: stored.username,
+            token: stored.token,
+            isLoading: false,
+          });
+        })
+        .catch(() => {
+          // Token 过期或无效 — 清除
+          clearAuthFromStorage();
+          setAuth({ isAuthenticated: false, username: null, token: null, isLoading: false });
+        });
+    } else {
+      setAuth({ isAuthenticated: false, username: null, token: null, isLoading: false });
     }
-    // Verify token against backend
-    fetch("/api/v1/auth/me", {
-      headers: { Authorization: `Bearer ${auth.token}` },
-    })
-      .then((res) => {
-        if (!res.ok) throw new Error("Token invalid");
-        return res.json();
-      })
-      .then(() => {
-        setAuth((prev) => ({ ...prev, isAuthenticated: true, isLoading: false }));
-      })
-      .catch(() => {
-        // Token expired or invalid — clear
-        clearAuthFromStorage();
-        setAuth({ isAuthenticated: false, username: null, token: null, isLoading: false });
-      });
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  }, []);
 
   const login = useCallback(async (username: string, password: string) => {
     const res = await fetch("/api/v1/auth/login", {
