@@ -19,7 +19,7 @@
 ---
 
 <p align="center">
-  <img src="docs/images/screenshot-workspace.png" alt="NovaDirector AI Workspace" width="90%" />
+  <img src="https://github.com/66530/BeatSheet-AI/raw/main/docs/images/screenshot-workspace.png" alt="NovaDirector AI Workspace" width="90%" />
 </p>
 
 ---
@@ -149,7 +149,7 @@ graph TD
 
 <p align="center">
   <b>导演控制台 -- 工作区</b><br/>
-  <img src="docs/images/screenshot-workspace.png" alt="工作区" width="80%" />
+  <img src="https://github.com/66530/BeatSheet-AI/raw/main/docs/images/screenshot-workspace.png" alt="工作区" width="80%" />
 </p>
 
 <details>
@@ -157,27 +157,27 @@ graph TD
 
 <p align="center">
   <b>场景工作台与质量看板</b><br/>
-  <img src="docs/images/screenshot-scenes.png" alt="场景工作台" width="80%" />
+  <img src="https://github.com/66530/BeatSheet-AI/raw/main/docs/images/screenshot-scenes.png" alt="场景工作台" width="80%" />
 </p>
 
 <p align="center">
   <b>角色关系图谱</b><br/>
-  <img src="docs/images/screenshot-characters.png" alt="角色图谱" width="80%" />
+  <img src="https://github.com/66530/BeatSheet-AI/raw/main/docs/images/screenshot-characters.png" alt="角色图谱" width="80%" />
 </p>
 
 <p align="center">
   <b>剧本查看器</b><br/>
-  <img src="docs/images/screenshot-screenplay.png" alt="剧本查看器" width="80%" />
+  <img src="https://github.com/66530/BeatSheet-AI/raw/main/docs/images/screenshot-screenplay.png" alt="剧本查看器" width="80%" />
 </p>
 
 <p align="center">
   <b>模型配置面板</b><br/>
-  <img src="docs/images/screenshot-config.png" alt="模型配置" width="80%" />
+  <img src="https://github.com/66530/BeatSheet-AI/raw/main/docs/images/screenshot-config.png" alt="模型配置" width="80%" />
 </p>
 
 <p align="center">
   <b>上传与处理流水线</b><br/>
-  <img src="docs/images/screenshot-upload.png" alt="上传界面" width="80%" />
+  <img src="https://github.com/66530/BeatSheet-AI/raw/main/docs/images/screenshot-upload.png" alt="上传界面" width="80%" />
 </p>
 
 </details>
@@ -237,7 +237,7 @@ docker compose up -d
 NovaDirector AI 兼容**任意 OpenAI 接口格式的 API**。模型配置在浏览器界面中完成，数据存储在本地浏览器，不会发送至任何外部服务器。
 
 <p align="center">
-  <img src="docs/images/screenshot-config.png" alt="模型配置面板" width="60%" />
+  <img src="https://github.com/66530/BeatSheet-AI/raw/main/docs/images/screenshot-config.png" alt="模型配置面板" width="60%" />
 </p>
 
 **内置支持的供应商：**
