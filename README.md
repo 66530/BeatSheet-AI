@@ -23,6 +23,12 @@
 </p>
 
 ---
+ <p align="center">
+ <a href="https://www.bilibili.com/video/BV15bEh68EFF/" target="_blank">
+      <b>🎬 观看演示视频 — NovaDirector AI 功能展示</b>
+   </a><br/>
+    <sub>点击上方链接在 Bilibili 查看完整演示</sub>
+  </p>
 
 ## Overview
 
