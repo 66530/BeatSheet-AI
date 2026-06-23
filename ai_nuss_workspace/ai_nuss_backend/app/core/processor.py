@@ -5,6 +5,7 @@ AI-NUSS 3.0 — Async Job Processor (升级版)
         → Scene Segmentation → Beat Extraction → Screenplay → YAML Export
 """
 import asyncio
+import os
 import traceback
 from typing import Dict, Any
 from app.core.job_store import store
@@ -19,6 +20,23 @@ async def process_job(job_id: str) -> None:
     text = job.file_text or ""
     title = job.novel_title or (job.file_name or "未命名")
     mc = job.state.get("model_config", {})  # User's LLM config
+
+    # ── 兜底：如果用户未在前端配置模型，回退到 .env 中的 API Key ──
+    if not mc.get("base_url") or not mc.get("api_key"):
+        env_key = os.getenv("DEEPSEEK_API_KEY", "")
+        env_base = os.getenv("DEEPSEEK_BASE_URL", "https://api.deepseek.com")
+        if env_key:
+            mc = {
+                "provider": "deepseek",
+                "base_url": env_base,
+                "model": "deepseek-chat",
+                "api_key": env_key,
+            }
+            await store.update_state(job_id, {"model_config": mc})
+            await store.add_event(job_id, "model_fallback", {
+                "message": "使用环境变量中的 API Key 兜底",
+                "provider": "deepseek",
+            })
 
     try:
         # ═══════════════════════════════════════════
@@ -77,11 +95,11 @@ async def process_job(job_id: str) -> None:
             entity_map = ca_result.data.get("entity_map", {})
             await store.update_state(job_id, {"entity_map": entity_map, "master_cast_list": cast})
         await _progress(job_id, "analyzing", 40, f"角色识别完成: {len(cast)}人", "characters")
-        for c in cast[:8]:
-            await store.add_event(job_id, "character_found", {
-                "character_id": c.get("character_id"), "canonical_name": c.get("canonical_name"),
-                "role": c.get("role"), "confidence": c.get("confidence_score", 1.0),
-            })
+        await store.add_event(job_id, "character_summary", {
+            "total_characters": len(cast),
+            "protagonist": next((c.get("canonical_name", "") for c in cast if c.get("role") == "protagonist"), ""),
+            "roles": list(set(c.get("role", "") for c in cast)),
+        })
 
         # ═══════════════════════════════════════════
         # Stage 4: 场景切分 (40% → 65%)
@@ -99,49 +117,57 @@ async def process_job(job_id: str) -> None:
         await store.update_state(job_id, {"scenes": scenes, "scene_version": 1})
         await _progress(job_id, "analyzing", 45, f"切分完成: {total_scenes}场", "scenes")
 
-        # — 4b: 逐场AI润色 (45% → 63%, 前3场各占6%) —
-        enrich_count = min(3, total_scenes)
-        if enrich_count > 0 and not settings.STUB_MODE:
-            await _progress(job_id, "analyzing", 46, f"AI润色场景 0/{enrich_count}", "scenes")
-            for i, s in enumerate(scenes[:enrich_count]):
-                await store.add_event(job_id, "scene_refining", {
-                    "current_scene": i + 1, "total_scenes": enrich_count,
-                    "scene_id": s.get("scene_id"), "scene_number": s.get("scene_number"),
-                })
-                await _progress(job_id, "analyzing", 46 + i * 6,
-                    f"AI润色场景 {i + 1}/{enrich_count} — 第{s.get('scene_number')}场 {s.get('location','')}",
-                    "scenes")
+        # 场景结构已就绪 → 立即推送前端，让用户马上看到
+        await store.add_event(job_id, "scenes_segmented", {
+            "message": f"场景切分完成: {total_scenes}场",
+            "total_scenes": total_scenes,
+        })
 
-                ok = await sa.enrich_single_scene(s)
-                new_pct = 46 + (i + 1) * 6  # 46→52→58→64
-                if ok:
-                    await _progress(job_id, "analyzing", new_pct,
-                        f"场景 {i + 1}/{enrich_count} 润色完成 ✓",
-                        "scenes")
-                    await store.add_event(job_id, "scene_refined", {
-                        "current_scene": i + 1, "total_scenes": enrich_count,
-                        "scene_id": s.get("scene_id"),
-                        "summary": s.get("summary", "")[:100],
-                        "purpose": s.get("purpose", ""),
-                    })
-                else:
-                    await _progress(job_id, "analyzing", new_pct,
-                        f"场景 {i + 1}/{enrich_count} 润色跳过(使用规则推断)",
-                        "scenes")
+        # — 4b: 逐场AI润色 (45% → 63%) 全部场景并行批处理 —
+        enrich_count = total_scenes
+        if enrich_count > 0 and not settings.STUB_MODE:
+            print(f"[ENRICH-BATCH] Starting: {total_scenes} scenes in batches of 4")
+            # 并行批处理：每批 4 场
+            BATCH_SIZE = 4
+            batches = [scenes[i:i+BATCH_SIZE] for i in range(0, total_scenes, BATCH_SIZE)]
+            pct_per_batch = 18.0 / max(len(batches), 1)
+
+            await _progress(job_id, "analyzing", 46, f"AI润色场景 0/{total_scenes}", "scenes")
+
+            done = 0
+            for bi, batch in enumerate(batches):
+                tasks = [sa.enrich_single_scene(s) for s in batch]
+                results = await asyncio.gather(*tasks, return_exceptions=True)
+
+                for s, ok in zip(batch, results):
+                    if isinstance(ok, Exception):
+                        continue  # enrich failed → keep rule-based defaults
+                    if ok:
+                        done += 1
+
+                new_pct = min(63, 46 + int((bi + 1) * pct_per_batch))
+                await _progress(job_id, "analyzing", new_pct,
+                    f"AI润色场景 {done}/{total_scenes}",
+                    "scenes")
+                await store.add_event(job_id, "scene_refining_batch", {
+                    "current_batch": bi + 1, "total_batches": len(batches),
+                    "enriched": done, "total": total_scenes,
+                })
 
             await store.update_state(job_id, {"scenes": scenes})
+            print(f"[ENRICH-BATCH] Done: {done}/{total_scenes} enriched successfully")
+            await store.add_event(job_id, "scenes_enriched", {
+                "enriched": done, "total": total_scenes,
+            })
+        elif enrich_count > 0 and settings.STUB_MODE:
+            print(f"[ENRICH-BATCH] SKIPPED — STUB_MODE is ON")
 
         await _progress(job_id, "analyzing", 63, f"场景切分完成: {total_scenes}场", "scenes")
-        for s in scenes[:10]:
-            await store.add_event(job_id, "scene_generated", {
-                "scene_id": s.get("scene_id"), "scene_number": s.get("scene_number"),
-                "location": s.get("location", ""), "time": s.get("time", ""),
-                "timeline_mode": s.get("timeline_mode", "sequential"),
-                "summary": s.get("summary", "")[:120],
-                "purpose": s.get("purpose", ""),
-                "conflict_level": s.get("conflict_level", 0),
-                "emotional_tone": s.get("emotional_tone", ""),
-            })
+        # 摘要事件，不再逐场推送
+        await store.add_event(job_id, "scenes_summary", {
+            "total_scenes": total_scenes,
+            "sample_locations": [s.get("location", "") for s in scenes[:5] if s.get("location")],
+        })
 
         # ═══════════════════════════════════════════
         # Stage 5: 剧本生成 (65% → 95%)
@@ -159,11 +185,27 @@ async def process_job(job_id: str) -> None:
         screenplay = {}
         stats = None
         completion_status = "COMPLETED"
+
+        # Try real result first. If it FAILED, use fallback mock data.
+        screenplay_data = None
         if spa_result.success and spa_result.data:
-            all_beats = spa_result.data.get("beats", [])
-            screenplay = spa_result.data.get("screenplay", {})
-            stats = spa_result.data.get("stats")
-            completion_status = spa_result.data.get("_completion_status", "COMPLETED")
+            real_status = spa_result.data.get("_completion_status", "COMPLETED")
+            if real_status == "FAILED" and spa_result.fallback_data and spa_result.fallback_data.get("data"):
+                # Real LLM failed entirely — use deterministic mock
+                screenplay_data = spa_result.fallback_data["data"]
+                await store.add_event(job_id, "beat_fallback", {
+                    "message": "LLM调用失败，使用确定性回退数据",
+                })
+            else:
+                screenplay_data = spa_result.data
+        elif spa_result.fallback_data and spa_result.fallback_data.get("data"):
+            screenplay_data = spa_result.fallback_data["data"]
+
+        if screenplay_data:
+            all_beats = screenplay_data.get("beats", [])
+            screenplay = screenplay_data.get("screenplay", {})
+            stats = screenplay_data.get("stats")
+            completion_status = screenplay_data.get("_completion_status", "COMPLETED")
 
             # 将节拍挂载到对应场景
             beats_by_sid: dict = {}
@@ -205,29 +247,16 @@ async def process_job(job_id: str) -> None:
                 "generated": gen, "total": tot, "coverage": cov,
             })
 
-        # Per-scene 日志
-        if stats:
-            for p in stats.get("per_scene", []):
-                await store.add_event(job_id, "beat_scene_log", {
-                    "scene_id": p.get("scene_id"), "scene_number": p.get("scene_number"),
-                    "status": p.get("status"), "beats": p.get("beats", 0),
-                    "tokens_in": p.get("tokens_in", 0), "tokens_out": p.get("tokens_out", 0),
-                    "latency": p.get("latency", 0),
-                    "error": p.get("error", ""), "skip_reason": p.get("skip_reason", ""),
-                })
-
         await _progress(job_id, "generating", 93,
             f"剧本生成完成: {len(all_beats)}节拍 {len(screenplay.get('episodes',[]))}集",
             "beats")
 
-        for b in all_beats[:15]:
-            await store.add_event(job_id, "beat_generated", {
-                "scene_id": b.get("scene_id"), "beat_id": b.get("beat_id"),
-                "beat_type": b.get("beat_type"), "summary": b.get("summary", "")[:100],
-                "emotion": b.get("emotion", ""), "intensity": b.get("intensity", 0.5),
-                "actions_count": len(b.get("actions", [])),
-                "dialogues_count": len(b.get("dialogues", [])),
-            })
+        # 摘要事件：仅发送统计，不逐条推送
+        await store.add_event(job_id, "beat_summary", {
+            "total_beats": len(all_beats),
+            "beat_types": list(set(b.get("beat_type", "") for b in all_beats)),
+            "avg_intensity": sum(b.get("intensity", 0) for b in all_beats) / max(len(all_beats), 1),
+        })
 
         # ═══════════════════════════════════════════
         # Stage 5.5: AI导演分析 (93% → 98%)

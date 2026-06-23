@@ -47,13 +47,12 @@ export default function ExportModal({ open, onClose, scenes, singleScene }: Prop
   };
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center animate-fade-in" onClick={onClose}>
+    <div className="fixed inset-0 z-[100] flex items-center justify-center animate-fade-in">
       {/* Overlay */}
-      <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" />
+      <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose} />
       {/* Modal */}
       <div
         className="relative w-full max-w-sm mx-4 console-panel p-6 space-y-5 animate-slide-up z-10"
-        onClick={e => e.stopPropagation()}
       >
         <div className="flex items-center justify-between">
           <h3 className="text-sm font-semibold">{singleScene ? `导出第${scenes[0]?.scene_number || "?"}场` : "导出剧本"}</h3>

@@ -120,7 +120,7 @@ export default function LoginPage() {
 
         {/* Hint */}
         <p className="text-center text-[10px] text-[--nuss-muted]/60 mt-4">
-          默认账户: admin / admin123
+          凭证在 backend/.env 中配置（ADMIN_USERNAME / ADMIN_PASSWORD）
         </p>
       </div>
     </div>

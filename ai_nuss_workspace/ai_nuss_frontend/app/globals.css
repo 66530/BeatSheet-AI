@@ -2,19 +2,41 @@
 @tailwind components;
 @tailwind utilities;
 
-/* === NovaDirector AI — ChatGPT-inspired Premium Light Theme === */
+/* ═══════════════════════════════════════════════════════
+   NovaDirector AI — Dark Tech Theme
+   Color System: Obsidian + Dark Amethyst + Neon Cyan
+   ═══════════════════════════════════════════════════════ */
 
 :root {
-  --nuss-bg: #ffffff;
-  --nuss-subtle: #f7f7f8;
-  --nuss-surface: #ffffff;
-  --nuss-elevated: #f7f7f8;
-  --nuss-border: #e5e5e5;
-  --nuss-accent: #10a37f;
-  --nuss-accent-glow: #19c37d;
-  --nuss-text: #0d0d0d;
-  --nuss-muted: #6e6e80;
-  --nuss-dim: #c5c5d2;
+  /* Core backgrounds */
+  --nuss-bg: #0D0C16;
+  --nuss-subtle: #120F24;
+  --nuss-surface: #16132A;
+  --nuss-elevated: #1A1635;
+  --nuss-sidebar: #09070F;
+
+  /* Borders & dividers */
+  --nuss-border: #252040;
+  --nuss-dim: #3A3570;
+
+  /* Accent — neon cyan/ice blue */
+  --nuss-accent: #00F0FF;
+  --nuss-accent-glow: #00D4FF;
+  --nuss-accent-soft: rgba(0, 240, 255, 0.12);
+
+  /* Secondary — electric purple */
+  --nuss-purple: #A855F7;
+  --nuss-purple-glow: #C084FC;
+  --nuss-pink: #EC4899;
+
+  /* Text */
+  --nuss-text: #E8E6F0;
+  --nuss-muted: #7876A0;
+  --nuss-dim-text: #504E70;
+
+  /* Frosted glass */
+  --nuss-glass-bg: rgba(20, 18, 32, 0.7);
+  --nuss-glass-border: rgba(255, 255, 255, 0.06);
 }
 
 * { box-sizing: border-box; }
@@ -28,23 +50,24 @@ html, body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Scrollbar */
+/* Scrollbar — dark */
 ::-webkit-scrollbar { width: 5px; height: 5px; }
 ::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: var(--nuss-border); border-radius: 3px; }
+::-webkit-scrollbar-thumb { background: var(--nuss-dim); border-radius: 3px; }
 ::-webkit-scrollbar-thumb:hover { background: var(--nuss-muted); }
 
 @layer components {
+  /* ══ Base cards ══ */
   .blank-safe-card {
     border: 1px solid var(--nuss-border);
     border-radius: 0.75rem;
     padding: 1rem;
-    transition: all 0.2s ease;
+    transition: all 0.25s ease;
     background: var(--nuss-surface);
   }
   .blank-safe-card:hover {
     border-color: var(--nuss-dim);
-    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    box-shadow: 0 0 18px rgba(168, 85, 247, 0.08);
   }
 
   .console-panel {
@@ -54,19 +77,31 @@ html, body {
     background: var(--nuss-surface);
   }
 
+  /* ══ Glass frosted panel ══ */
+  .glass-panel {
+    border-radius: 0.75rem;
+    border: 1px solid var(--nuss-glass-border);
+    padding: 1rem;
+    background: var(--nuss-glass-bg);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+  }
+
+  /* ══ Buttons ══ */
   .console-btn {
     padding: 0.45rem 0.9rem;
     border-radius: 0.5rem;
     font-weight: 500;
     font-size: 0.8125rem;
-    transition: all 0.15s ease;
+    transition: all 0.2s ease;
     border: 1px solid var(--nuss-border);
     background: var(--nuss-surface);
     color: var(--nuss-text);
     cursor: pointer;
   }
   .console-btn:hover {
-    background: var(--nuss-subtle);
+    background: var(--nuss-elevated);
+    border-color: var(--nuss-dim);
   }
   .console-btn:disabled {
     opacity: 0.4; cursor: not-allowed;
@@ -77,28 +112,90 @@ html, body {
     border-radius: 0.5rem;
     font-weight: 600;
     font-size: 0.8125rem;
-    transition: all 0.15s ease;
+    transition: all 0.2s ease;
     border: 1px solid var(--nuss-accent);
-    background: var(--nuss-accent);
-    color: #fff;
+    background: linear-gradient(135deg, #00D4FF, #00B4D8);
+    color: #0D0C16;
     cursor: pointer;
   }
   .console-btn-primary:hover {
-    background: #0d9270;
-    box-shadow: 0 2px 8px rgba(16,163,127,0.2);
+    box-shadow: 0 0 20px rgba(0, 240, 255, 0.25);
   }
   .console-btn-primary:disabled {
     opacity: 0.4; cursor: not-allowed;
   }
 
-  /* ═══════════════════════════════════════════════
-     标准剧本排版样式
-     ═══════════════════════════════════════════════ */
+  /* ══ Neon metric card ══ */
+  .metric-card {
+    text-align: center;
+    padding: 0.75rem;
+    border-radius: 0.75rem;
+    background: var(--nuss-surface);
+    border: 1px solid transparent;
+    transition: all 0.25s ease;
+  }
+  .metric-card:hover {
+    border-color: var(--nuss-dim);
+    box-shadow: 0 0 24px rgba(168, 85, 247, 0.1);
+  }
+  .metric-value {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--nuss-accent);
+    text-shadow: 0 0 10px rgba(0, 240, 255, 0.3);
+  }
+  .metric-label {
+    font-size: 0.625rem;
+    color: var(--nuss-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-top: 0.15rem;
+  }
+
+  /* ══ Sidebar nav ══ */
+  .sidebar-nav-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.75rem 0.5rem;
+    border-radius: 0.75rem;
+    transition: all 0.2s ease;
+    cursor: pointer;
+    color: var(--nuss-muted);
+    border: 1px solid transparent;
+    font-size: 0.625rem;
+    text-align: center;
+    user-select: none;
+  }
+  .sidebar-nav-item:hover {
+    color: var(--nuss-text);
+    background: rgba(255, 255, 255, 0.04);
+  }
+  .sidebar-nav-item.active {
+    color: var(--nuss-accent);
+    background: linear-gradient(135deg, rgba(236, 72, 153, 0.12), rgba(168, 85, 247, 0.12));
+    border-left: 2px solid var(--nuss-pink);
+    box-shadow: inset 0 0 16px rgba(236, 72, 153, 0.06);
+  }
+
+  /* ══ Badge / Status pill ══ */
+  .status-badge {
+    padding: 0.2rem 0.6rem;
+    border-radius: 999px;
+    font-size: 0.6rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    border: 1px solid;
+    text-shadow: 0 0 6px currentColor;
+  }
+
+  /* ══ Standard script typography ══ */
   .script-page {
     background: #fafaf8;
     color: #1a1a1a;
     padding: 3rem 3.5rem 3rem 3.8rem;
-    font-family: "SimSun", "Noto Serif CJK SC", "Source Han Serif SC", "宋体", serif;
+    font-family: "SimSun", "Noto Serif CJK SC", "Source Han Serif SC", serif;
     font-size: 14px;
     line-height: 1.8;
     max-width: 800px;
@@ -123,11 +220,7 @@ html, body {
     font-style: italic;
   }
 
-  .script-action {
-    margin: 0.8em 0;
-    text-align: justify;
-    line-height: 1.8;
-  }
+  .script-action { margin: 0.8em 0; text-align: justify; line-height: 1.8; }
 
   .script-char-ref {
     color: var(--nuss-accent);
@@ -143,10 +236,7 @@ html, body {
     letter-spacing: 0.1em;
   }
 
-  .script-dialogue-block {
-    margin: 0.8em auto;
-    max-width: 480px;
-  }
+  .script-dialogue-block { margin: 0.8em auto; max-width: 480px; }
 
   .script-character-name {
     text-align: center;
@@ -163,11 +253,7 @@ html, body {
     margin-left: 0.3em;
   }
 
-  .script-dialogue-line {
-    text-align: center;
-    padding: 0 2em;
-    line-height: 1.7;
-  }
+  .script-dialogue-line { text-align: center; padding: 0 2em; line-height: 1.7; }
 
   .script-subtext {
     text-align: center;
@@ -197,28 +283,15 @@ html, body {
 }
 
 /* ═══════════════════════════════════════════════════════════
-   Print Mode — 隐藏 UI 仅保留剧本内容
+   Print Mode
    ═══════════════════════════════════════════════════════════ */
 @media print {
   header, nav, aside, .no-print,
   button, select, details, [class*="fixed"], [class*="sticky"] {
     display: none !important;
   }
-  body {
-    background: #fff !important;
-    color: #000 !important;
-    font-size: 14px;
-    line-height: 1.8;
-  }
-  main {
-    max-width: 100% !important;
-    margin: 0 !important;
-    padding: 0 !important;
-  }
-  .script-page {
-    box-shadow: none !important;
-    border: none !important;
-    background: #fff !important;
-  }
+  body { background: #fff !important; color: #000 !important; font-size: 14px; line-height: 1.8; }
+  main { max-width: 100% !important; margin: 0 !important; padding: 0 !important; }
+  .script-page { box-shadow: none !important; border: none !important; background: #fff !important; }
   @page { margin: 25mm; size: A4; }
 }

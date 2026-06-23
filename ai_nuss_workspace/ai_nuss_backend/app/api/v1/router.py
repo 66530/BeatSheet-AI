@@ -18,7 +18,7 @@ api_v1_router.include_router(
     tags=["Auth"],
 )
 
-# === Job submission & status (Chapter 6 §1) ===
+# === Job submission & status + AI Local Editing (Chapter 6 §1) ===
 api_v1_router.include_router(
     jobs.router,
     prefix="/jobs",

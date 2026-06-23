@@ -1,5 +1,5 @@
 """
-AI-NUSS 3.0 — Scene Segmentation Engine (v3)
+AI-NUSS 3.0 — Scene Segmentation Engine (v3 + location_type)
 五类标准分场规则:
   1. location_shift — 物理地理位置变换
   2. time_shift — 同地时间变换
@@ -105,47 +105,174 @@ class SceneSegmentationDetector:
 # ═══════════════════════════════════════════════════════════
 
 class LocationExtractor:
-    """从文本中智能提取场景位置"""
+    """从文本中智能提取场景位置与时间（改进版 — 扩展关键词和提取模式）"""
 
-    INTERIOR = ["房间", "卧室", "客厅", "书房", "厨房", "浴室", "厅", "室", "楼", "廊", "办公室", "会议室", "教室", "审讯室", "牢房", "病房"]
-    EXTERIOR = ["花园", "街道", "广场", "公园", "院", "路", "街", "河边", "海边", "山", "林", "田野", "操场"]
+    # 室内关键词（扩展）
+    INTERIOR = [
+        "房间", "卧室", "客厅", "书房", "厨房", "浴室", "厅", "室", "楼", "廊",
+        "办公室", "会议室", "教室", "审讯室", "牢房", "病房", "诊所", "医院",
+        "殿", "堂", "阁", "轩", "斋", "包厢", "雅间", "客栈", "酒店", "宾馆",
+        "咖啡馆", "茶馆", "酒馆", "餐馆", "电梯里", "车内", "车里", "轿内",
+        "牢内", "狱中", "宫内", "殿内", "庙", "祠", "庵", "寺",
+        "寝室", "宿舍", "密室", "暗室", "地窖", "地下室",
+        "屋檐下", "廊下", "门前", "窗边", "桌旁", "床", "椅",
+    ]
+    # 室外关键词（扩展）
+    EXTERIOR = [
+        "花园", "街道", "广场", "公园", "院", "路", "街", "河边", "海边",
+        "山", "林", "田野", "操场", "码头", "桥", "渡口", "郊外",
+        "巷", "弄", "胡同", "集市", "市场", "车站", "机场", "月台",
+        "野外", "墓地", "荒原", "沙漠", "草原", "雪地", "泥地",
+        "崖", "峰", "山顶", "山坡", "溪边", "湖边", "江边",
+        "天际", "天空下", "露天", "户外", "屋外", "门外", "院外",
+        "亭", "台", "榭", "廊桥",
+    ]
+
+    @classmethod
+    def classify_indoor_outdoor(cls, location: str) -> str:
+        """根据已知的室内/室外关键词判定 location_type。
+        EXTERIOR 先于 INTERIOR 检查，避免单字关键词（如 INTERIOR 的 "室"）
+        误匹配包含该字的室外地点（如"室外"）。"""
+        if not location: return "unknown"
+        # EXTERIOR 优先：防止 "室外" 被 INTERIOR 的 "室" 误判为 indoor
+        if any(w in location for w in cls.EXTERIOR): return "outdoor"
+        if any(w in location for w in cls.INTERIOR): return "indoor"
+        return "unknown"
 
     @classmethod
     def extract(cls, text: str) -> Tuple[str, str]:
         """
         返回: (地点名, 时间)
         """
-        # 尝试提取具体地点名
+        # 先尝试提取具体地点名（优先）
         named_loc = cls._extract_named_location(text)
-        is_interior = any(w in text for w in cls.INTERIOR) or "INT." in text
-        is_exterior = any(w in text for w in cls.EXTERIOR) or "EXT." in text
 
-        location = named_loc or (f"{'室内' if is_interior else '室外' if is_exterior else '室内'}")
+        if named_loc:
+            return named_loc, cls._extract_time(text)
+
+        # 无具体地名 → 用文本中出现的最具体地点关键词作为位置名
+        # 优先级：具名房间 > 建筑类型 > 室外场所 > 室内/室外
+        NAMED_ROOMS = [
+            "卧室", "客厅", "书房", "厨房", "浴室", "办公室", "会议室",
+            "教室", "审讯室", "牢房", "病房", "寝室", "宿舍", "密室", "暗室",
+        ]
+        NAMED_BUILDINGS = [
+            "诊所", "医院", "客栈", "酒店", "宾馆", "咖啡馆", "茶馆", "酒馆", "餐馆",
+            "庙", "祠", "庵", "寺", "宫", "殿", "堂", "阁", "轩", "斋",
+        ]
+        NAMED_OUTDOOR = [
+            "花园", "院子", "院落", "广场", "公园", "码头", "桥", "渡口",
+            "巷", "弄", "胡同", "集市", "市场", "车站", "机场", "月台",
+            "墓地", "荒原", "沙漠", "草原", "山", "山顶", "山坡",
+            "溪边", "湖边", "江边", "河边", "海边",
+        ]
+
+        for name in NAMED_ROOMS:
+            if name in text:
+                return name, cls._extract_time(text)
+        for name in NAMED_BUILDINGS:
+            if name in text:
+                return name, cls._extract_time(text)
+        for name in NAMED_OUTDOOR:
+            if name in text:
+                return name, cls._extract_time(text)
+
+        # 统计室内/室外关键词 → 用具体词或兜底
+        interior_count = sum(1 for w in cls.INTERIOR if w in text)
+        exterior_count = sum(1 for w in cls.EXTERIOR if w in text)
+
+        # 找到命中次数最多的具体关键词
+        best_interior = ""
+        best_exterior = ""
+        for w in cls.INTERIOR:
+            if w in text and len(w) > len(best_interior):
+                best_interior = w
+        for w in cls.EXTERIOR:
+            if w in text and len(w) > len(best_exterior):
+                best_exterior = w
+
+        if interior_count > exterior_count:
+            location = best_interior or "室内"
+        elif exterior_count > interior_count:
+            location = best_exterior or "室外"
+        else:
+            dialogue_markers = ["说", "道", "问", "答", "想", "心中", "暗暗", "心想"]
+            if any(w in text for w in dialogue_markers):
+                location = best_interior or "室内"
+            else:
+                location = best_exterior or "室外"
 
         return location, cls._extract_time(text)
 
     @classmethod
     def _extract_named_location(cls, text: str) -> Optional[str]:
+        """提取具体地点名，按优先级尝试多种模式"""
         patterns = [
-            r"(?:林|陈|王|李|张|赵|刘|黄|吴|周|杨|许|何|冯|孙|马|朱|胡|郭|高|罗|梁|宋|郑|谢|韩|唐|于|董|萧|程|曹|袁|邓)[家府宅园邸]",
+            # 1. INT./EXT. 标记
             r"INT\.\s*(.+)",
             r"EXT\.\s*(.+)",
-            r"(?:来到|走进|回到|进入)(?:了)?(.{1,8}(?:厅|室|园|房|院|楼|廊|街|场|店|馆|所))",
+            # 2. "姓+家/府/宅/园/邸"
+            r"([一-鿿]{1,2}(?:家|府|宅|园|邸))",
+            # 3. "来到/走进/回到/进入 + 地点"（扩展地点后缀）
+            r"(?:来到|走进|回到|进入|踏入|迈入|跨入)(?:了|到)?(.{1,12}(?:厅|室|园|房|院|楼|廊|街|场|店|馆|所|殿|堂|阁|庙|寺|宫|巷|弄))",
+            # 4. "在XX里/中/内/外/前/旁/边/上"
+            r"在([一-鿿]{1,6}(?:里|中|内|外|前|旁|边|上|下))",
+            # 5. "XX的XX" 所有格地点（她的小屋 / 父亲的办公室）
+            r"的([一-鿿]{2,4}(?:厅|室|园|房|院|楼|街|店|馆|屋|所|家))",
         ]
         for p in patterns:
             m = re.search(p, text)
-            if m and m.lastindex:
-                name = m.group(1).strip() if m.group(1) else m.group(0).strip()
-                if name and len(name) > 1:
-                    return name
+            if m:
+                if m.lastindex:
+                    name = m.group(1).strip() if m.group(1) else m.group(0).strip()
+                else:
+                    name = m.group(0).strip()
+                # 过滤掉太短或明显不是地名的
+                if name and len(name) >= 2 and name not in ("了", "到", "的", "在"):
+                    # 去掉句号、逗号等标点
+                    name = re.sub(r'[，。！？、；：""''（）\s]', '', name)
+                    if len(name) >= 2:
+                        return name
         return None
 
     @classmethod
     def _extract_time(cls, text: str) -> str:
-        if not text: return "日"
-        if any(w in text for w in ["夜", "晚", "灯", "月", "星", "宵", "午夜", "凌晨"]): return "夜"
-        if any(w in text for w in ["晨", "早", "日出", "天亮", "拂晓", "黎明", "清晨"]): return "晨"
-        if any(w in text for w in ["黄昏", "傍晚", "日落", "暮", "夕", "入夜"]): return "昏"
+        """从文本推断场景发生时间（扩展关键词 + 比例判定）"""
+        if not text:
+            return "日"
+
+        night_kw = [
+            "夜", "晚", "灯", "月", "星", "宵", "午夜", "凌晨", "半夜",
+            "三更", "深更", "黑", "暗夜", "夜色", "月光", "星辰", "繁星",
+            "灯火", "烛光", "路灯", "霓虹", "篝火", "晚饭", "晚餐",
+            "入睡", "躺下", "床上", "被窝", "困意", "呵欠", "疲惫不堪",
+        ]
+        morning_kw = [
+            "晨", "早", "日出", "天亮", "拂晓", "黎明", "清晨", "早晨",
+            "朝阳", "晨曦", "早饭", "早餐", "起床", "睡醒", "睁眼",
+        ]
+        dusk_kw = [
+            "黄昏", "傍晚", "日落", "暮", "夕", "入夜", "夕阳", "暮色",
+            "晚霞", "余晖", "晚饭后", "夜幕降临", "华灯初上", "天色渐暗",
+        ]
+
+        night_score = sum(1 for w in night_kw if w in text)
+        morning_score = sum(1 for w in morning_kw if w in text)
+        dusk_score = sum(1 for w in dusk_kw if w in text)
+
+        # 取最高分
+        if night_score > morning_score and night_score > dusk_score:
+            return "夜"
+        if morning_score > night_score and morning_score > dusk_score:
+            return "晨"
+        if dusk_score > night_score and dusk_score > morning_score:
+            return "昏"
+
+        # 分值相同 → 按优先级：日 > 夜 > 晨 > 昏
+        if night_score > 0:
+            return "夜"
+        if morning_score > 0:
+            return "晨"
         return "日"
 
 
@@ -323,6 +450,16 @@ class SceneAgent(BaseAgent[Dict[str, Any]]):
         char_count = len(text)
         dialogue_hints = text.count('"') // 2 + text.count('"') // 2 + text.count('"') // 2  # 引号对数
 
+        # ── 从完整场景文本重新提取地点和时间（比单段落触发词更准确）──
+        full_loc, full_time = LocationExtractor.extract(text)
+        # 优先用全文本提取结果；如果全文本结果是兜底值而单段落更具体，则保留单段落
+        if full_loc and full_loc not in ("室内", "室外"):
+            loc = full_loc
+        elif loc in ("室内", "室外") and full_loc not in ("室内", "室外"):
+            loc = full_loc
+        if full_time and full_time != "日" or (time == "日" and full_time != "日"):
+            time = full_time
+
         # 场景标题
         if mode == "location_shift":
             title = f"转场至 {loc}"
@@ -350,17 +487,24 @@ class SceneAgent(BaseAgent[Dict[str, Any]]):
             "summary": summary,
             "purpose": self._infer_purpose(text),
             "location": loc,
+            "location_type": LocationExtractor.classify_indoor_outdoor(loc),
             "time": time,
+            "time_of_day": time,                       # Frontend SceneUIModel compat
             "timeline_mode": mode,
             "conflict_level": self._estimate_conflict(text),
             "emotional_tone": self._estimate_emotion(text),
             "objective": self._infer_objective(text),
             "cast": cast,
+            "character_ids": cast,                     # Frontend SceneUIModel compat
+            "scene_score": quality.get("quality_score", 0),  # Frontend SceneUIModel compat
             "raw_scene_text_block": text,
             "segmentation_reason": {
                 "reason_text": reason,
                 "mode": mode,
                 "markers": markers,
+                "objective_changed": "目标" in reason,
+                "conflict_changed": "冲突" in reason,
+                "score": 0.5,
             },
             "source_chapters": [chapter],
             "source_paragraphs": source_paragraphs or [],
@@ -484,21 +628,53 @@ class SceneAgent(BaseAgent[Dict[str, Any]]):
     # ═══════════════════════════════════════
 
     async def _enrich_one(self, scene: Dict) -> bool:
-        """润色单个场景元数据。返回 True=成功。"""
+        """润色单个场景元数据（含地点/时间 AI 推断）。返回 True=成功。"""
         text = scene.get("raw_scene_text_block", "")
+        sid = scene.get("scene_id", "?")
         if len(text) < 50:
+            print(f"[ENRICH] {sid} SKIP — text too short ({len(text)} chars)")
             return False
         state = self._model_state or {}
-        client = self._get_raw_client(state)
+        try:
+            client = self._get_raw_client(state)
+        except Exception as e:
+            print(f"[ENRICH] {sid} FAIL — no client: {e}")
+            return False
         model = self._get_model_name(state)
-        prompt = f"""分析场景文本，返回JSON: {{"summary":"场景摘要(保留原文细节,不限字数)","purpose":"戏剧目的","emotional_tone":"情绪基调"}}
-文本: {text[:1500]}"""
+        print(f"[ENRICH] {sid} calling {model} (chars={len(text)})...")
+        prompt = f"""分析这段场景文本，返回纯JSON:
+
+{{
+  "summary": "场景内容摘要（保留关键细节和人物动作）",
+  "purpose": "此场景的戏剧目的（如：展现冲突 / 揭示信息 / 角色成长 / 推进叙事）",
+  "emotional_tone": "整体情绪基调（如：紧张 / 悲伤 / 温暖 / 悬疑 / 愤怒 / 中性）",
+  "location": "具体地点名称（如：林家客厅 / 街头 / 警察局审讯室 / 花园，不要只说室内或室外）",
+  "time_of_day": "场景发生时段（日 / 夜 / 晨 / 昏 / 午后）",
+  "breakdown": {{
+    "props": ["道具列表，如：带血账本、青瓷茶杯、手枪"],
+    "wardrobe": ["特殊服装/化妆要求，如：破损夜行衣、脸上旧伤疤"],
+    "extras": ["群演/特约演员，如：家丁3男2女、带刀侍卫"],
+    "stunts": ["动作/特技需求，如：威亚打斗、追车"],
+    "vfx": ["视觉特效需求，如：绿幕、爆炸、窗外悬浮列车"],
+    "special_equipment": ["特殊设备需求，如：水下摄影、摇臂、航拍"]
+  }}
+}}
+
+要求：
+- 只列出文本中实际出现或明确暗示的内容，没有的用空数组[]
+- props 列出关键道具、武器、物品
+- wardrobe 列出特殊服装、化妆、造型要求
+- extras 估算群演类型和大致人数
+- stunts/vfx/special_equipment 根据动作描写、环境描述推断技术需求
+
+场景文本:
+{text[:1500]}"""
         try:
             resp = await asyncio.wait_for(
                 client.chat.completions.create(model=model,
                     messages=[{"role":"user","content":prompt}],
-                    temperature=0.4, max_tokens=250, timeout=12.0),
-                timeout=18.0)
+                    temperature=0.4, max_tokens=500, timeout=15.0),
+                timeout=20.0)
             content = resp.choices[0].message.content or "{}"
             content = content.strip()
             if content.startswith("```"): content = "\n".join(l for l in content.split("\n") if not l.strip().startswith("```"))
@@ -508,6 +684,29 @@ class SceneAgent(BaseAgent[Dict[str, Any]]):
                 if d.get("summary") and len(d["summary"]) > len(scene.get("summary","")): scene["summary"] = d["summary"]
                 if d.get("purpose"): scene["purpose"] = d["purpose"]
                 if d.get("emotional_tone"): scene["emotional_tone"] = d["emotional_tone"]
+                # AI 推断地点和时间，替换规则引擎的默认值
+                if d.get("location"):
+                    scene["location"] = d["location"]
+                    scene["location_type"] = LocationExtractor.classify_indoor_outdoor(d["location"])
+                if d.get("time_of_day"):
+                    scene["time"] = d["time_of_day"]
+                    scene["time_of_day"] = d["time_of_day"]
+                # 剧本拆解字段
+                bd = d.get("breakdown", {})
+                if bd:
+                    scene["breakdown"] = {
+                        "props": bd.get("props", []) or [],
+                        "wardrobe": bd.get("wardrobe", []) or [],
+                        "extras": bd.get("extras", []) or [],
+                        "stunts": bd.get("stunts", []) or [],
+                        "vfx": bd.get("vfx", []) or [],
+                        "special_equipment": bd.get("special_equipment", []) or [],
+                    }
+                scene["estimated_pages"] = round(max(0.25, len(text) / 500), 2)  # ~500字/页
+                print(f"[ENRICH] {sid} OK → location={scene.get('location')} time={scene.get('time')} props={len(scene.get('breakdown',{}).get('props',[]))} stunts={len(scene.get('breakdown',{}).get('stunts',[]))}")
+            else:
+                print(f"[ENRICH] {sid} WARN — no JSON found in response: {content[:80]}")
             return True
-        except Exception:
+        except Exception as e:
+            print(f"[ENRICH] {sid} FAIL — {type(e).__name__}: {str(e)[:120]}")
             return False

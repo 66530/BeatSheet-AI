@@ -17,16 +17,28 @@ const WS_BASE_URL =
 // Typed Interfaces (Chapter 9: SceneUIModel, etc.)
 // ═══════════════════════════════════════════════════════════════
 
+export interface ScriptBreakdownModel {
+  props: string[];             // 关键道具
+  wardrobe: string[];          // 服装/化妆
+  extras: string[];            // 群演/特约
+  stunts: string[];            // 动作/特技
+  vfx: string[];               // 视觉特效
+  special_equipment: string[]; // 特殊设备
+}
+
 export interface SceneUIModel {
   scene_id: string;
   scene_number: number;
   location: string;
+  location_type?: "indoor" | "outdoor" | "unknown";
   time_of_day: string;
   summary: string;
   timeline_mode: "sequential" | "flashback" | "parallel" | "montage";
   beats: BeatUIModel[];
   character_ids: string[];
   scene_score: number;
+  estimated_pages?: number;
+  breakdown?: ScriptBreakdownModel;
 }
 
 export interface BeatUIModel {
@@ -129,8 +141,9 @@ async function apiFetch<T>(
   });
   if (!res.ok) {
     const errorBody = await res.json().catch(() => ({}));
+    console.error(`[apiFetch] ${res.status} ${res.statusText}`, errorBody);
     throw new Error(
-      `API Error ${res.status}: ${(errorBody as { message?: string }).message || res.statusText}`
+      `API Error ${res.status}: ${(errorBody as { message?: string }).message || (errorBody as { detail?: string }).detail || res.statusText}`
     );
   }
   return res.json() as Promise<T>;
@@ -174,6 +187,50 @@ export async function reviewBibleCharacter(
       alias_remap: aliasRemap,
     }),
   });
+}
+
+export async function retryJob(
+  jobId: string
+): Promise<{ job_id: string; novel_id: string; status: string; message: string; retry_count: number }> {
+  return apiFetch(`/api/v1/jobs/${jobId}/retry`, { method: "POST" });
+}
+
+// ═══════════════════════════════════════════════════════════════
+// AI Local Editing
+// ═══════════════════════════════════════════════════════════════
+
+export type LocalEditOperation = "rewrite" | "expand" | "shorten" | "change_tone" | "regenerate";
+export type LocalEditTone = "funny" | "emotional" | "dark" | "romantic" | "suspense" | "inspirational" | "professional";
+
+export interface LocalEditResult {
+  edited_text: string;
+  operation: LocalEditOperation;
+  original_length: number;
+  edited_length: number;
+}
+
+export async function localEdit(
+  jobId: string,
+  operation: LocalEditOperation,
+  selectedText: string,
+  tone?: LocalEditTone,
+  customInstruction?: string,
+  previousScene?: string,
+  nextScene?: string,
+): Promise<LocalEditResult> {
+  const result: LocalEditResult = await apiFetch(`/api/v1/jobs/${jobId}/local-edit`, {
+    method: "POST",
+    body: JSON.stringify({
+      job_id: jobId,
+      operation,
+      selected_text: selectedText,
+      tone: tone || undefined,
+      custom_instruction: customInstruction || undefined,
+      previous_scene: previousScene || undefined,
+      next_scene: nextScene || undefined,
+    }),
+  });
+  return result;
 }
 
 export async function reviewScenes(
@@ -224,7 +281,6 @@ export function connectJobStream(
     ws = new WebSocket(url);
 
     ws.onopen = () => {
-      console.log(`[WS] Connected: ${url}`);
       retryCount = 0; // Reset retry counter on successful connection
     };
 
@@ -241,8 +297,7 @@ export function connectJobStream(
       console.error("[WS] Error:", err);
     };
 
-    ws.onclose = (event: CloseEvent) => {
-      console.log(`[WS] Closed: code=${event.code} reason=${event.reason}`);
+    ws.onclose = (_event: CloseEvent) => {
       ws = null;
 
       if (intentionalClose) return;
@@ -250,7 +305,6 @@ export function connectJobStream(
       // Exponential backoff reconnect (Chapter 12 §2)
       if (retryCount < MAX_RETRIES) {
         const delay = BASE_DELAY_MS * Math.pow(2, retryCount);
-        console.log(`[WS] Reconnecting in ${delay}ms (attempt ${retryCount + 1}/${MAX_RETRIES})`);
         reconnectTimer = setTimeout(async () => {
           retryCount++;
           // State reconciliation: re-fetch latest state before reconnecting

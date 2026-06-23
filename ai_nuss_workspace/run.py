@@ -364,6 +364,7 @@ def start_backend() -> bool:
             "app.main:app",
             "--host", "0.0.0.0",
             "--port", str(BACKEND_PORT),
+            "--reload",
             "--log-level", "info",
         ],
         cwd=BACKEND_DIR,
