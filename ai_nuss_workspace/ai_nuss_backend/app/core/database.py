@@ -84,9 +84,11 @@ async def get_db() -> AsyncSession:
 
 async def init_db():
     """
-    PHASE P0 bootstrap: Create all tables if they don't exist.
-    Called once at application startup. Safe to run repeatedly (IF NOT EXISTS).
+    Create all tables if they don't exist.
+    Called once at application startup. Safe to run repeatedly.
     """
+    # Import all models so they register on Base.metadata before create_all
+    import app.models as _models  # noqa: F401
     engine = _get_engine()
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)

@@ -21,17 +21,21 @@ from app.api.v1.router import api_v1_router
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    """
-    PHASE P0: Minimal lifespan — no DB init required for cold-start.
-    PHASE P2: Add init_db() and Redis connection pool warmup.
-    """
+    """Application lifespan: initialize DB on startup, clean up on shutdown."""
     # Startup
     app.state.startup_time = time.time()
-    # TODO (PHASE P2): await init_db() — create tables on startup
-    # TODO (PHASE P2): Warm up Redis connection pool
+    try:
+        from app.core.database import init_db
+        await init_db()
+        app.state.db_healthy = True
+    except Exception as e:
+        app.state.db_healthy = False
+        app.state.db_init_error = str(e)
     yield
     # Shutdown
-    # TODO (PHASE P2): Gracefully close DB engine, Redis connections
+    from app.core.database import _get_engine
+    engine = _get_engine()
+    await engine.dispose()
 
 
 # ═══════════════════════════════════════════════════════════════════════

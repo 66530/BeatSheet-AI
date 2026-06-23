@@ -1,32 +1,57 @@
 """
 AI-NUSS 3.0 — JWT Authentication Utilities
 Simple password-based login with JWT token issuance and verification.
+No hardcoded credentials — all secrets come from environment or are auto-generated on startup.
 """
 import os
 import hashlib
 import secrets
+import logging
 from datetime import datetime, timedelta, timezone
 from typing import Optional
 
 import jwt
-from app.core.config import settings
+from dotenv import load_dotenv
+
+# Ensure .env is loaded before reading os.getenv
+load_dotenv(os.path.join(os.path.dirname(__file__), "..", "..", ".env"), override=False)
+
+from app.core.config import settings  # noqa: E402
+
+logger = logging.getLogger(__name__)
 
 # ═══════════════════════════════════════════════════════════
-# JWT Configuration
+# JWT Configuration — auto-generate if not provided
 # ═══════════════════════════════════════════════════════════
 
-JWT_SECRET: str = os.getenv("JWT_SECRET", "ai-nuss-dev-secret-change-in-production")
+_JWT_SECRET_ENV = os.getenv("JWT_SECRET", "").strip()
+if _JWT_SECRET_ENV:
+    JWT_SECRET = _JWT_SECRET_ENV
+else:
+    JWT_SECRET = secrets.token_hex(32)
+    logger.warning("JWT_SECRET not set — auto-generated for this session. "
+                   "Set it in .env for persistence across restarts.")
+
 JWT_ALGORITHM: str = "HS256"
 JWT_EXPIRE_HOURS: int = int(os.getenv("JWT_EXPIRE_HOURS", "24"))
 
 # ═══════════════════════════════════════════════════════════
-# Hardcoded Admin Credentials (override via env vars)
+# Admin Credentials — no hardcoded defaults
 # ═══════════════════════════════════════════════════════════
 
 ADMIN_USERNAME: str = os.getenv("ADMIN_USERNAME", "admin")
-ADMIN_PASSWORD_HASH: str = hashlib.sha256(
-    os.getenv("ADMIN_PASSWORD", "admin123").encode()
-).hexdigest()
+
+_ADMIN_PASSWORD_ENV = os.getenv("ADMIN_PASSWORD", "").strip()
+if _ADMIN_PASSWORD_ENV:
+    ADMIN_PASSWORD_HASH = hashlib.sha256(_ADMIN_PASSWORD_ENV.encode()).hexdigest()
+else:
+    _generated_password = secrets.token_hex(8)
+    ADMIN_PASSWORD_HASH = hashlib.sha256(_generated_password.encode()).hexdigest()
+    logger.warning(
+        "ADMIN_PASSWORD not set in .env — generated temporary password: %s\n"
+        "Set ADMIN_PASSWORD in .env for persistence.",
+        _generated_password,
+    )
 
 
 def verify_password(username: str, password: str) -> bool:
