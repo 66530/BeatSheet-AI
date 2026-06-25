@@ -422,22 +422,22 @@ export default function ScreenplayViewer({ jobId: propJobId, scenes: originalSce
       {isEmpty ? (
         <div className="blank-safe-card p-10 text-center"><p className="text-[--nuss-muted] mt-3">暂无剧本数据</p></div>
       ) : (
-        <div className="flex gap-4 h-[calc(100vh-240px)]">
+        <div className="flex gap-3 h-[calc(100vh-160px)]">
           {/* ── 左侧：场景列表导航 ── */}
           <div className="w-40 shrink-0 space-y-0.5 overflow-y-auto no-print h-full">
             {scenes.map((s, i) => (
               <button
                 key={s.scene_id}
                 onClick={() => goTo(i)}
-                className={`w-full text-left px-2.5 py-1.5 rounded text-[11px] transition-all truncate ${
+                className={`w-full text-left px-2.5 py-1.5 rounded text-[11px] transition-all ${
                   i === currentPage
                     ? "bg-[--nuss-accent]/20 text-[--nuss-accent] font-semibold border border-[--nuss-accent]/30"
                     : "text-[--nuss-muted] hover:text-[--nuss-text] hover:bg-[--nuss-accent]/5 border border-transparent"
                 }`}
               >
-                <span className="text-[10px] mr-1">{i + 1}.</span>
-                {(s as Record<string, unknown>).director_note ? "💬 " : ""}
-                {s.location}
+                <span className="text-[10px] font-bold text-[--nuss-accent-glow]">第{i + 1}场</span>
+                <span className="mx-1 text-[--nuss-muted]">·</span>
+                <span className="truncate">{s.location}</span>
               </button>
             ))}
           </div>
@@ -466,10 +466,10 @@ export default function ScreenplayViewer({ jobId: propJobId, scenes: originalSce
             </div>
 
             {/* Scene Page — only this scrolls */}
-            <div className="w-full max-w-[1000px] flex-1 min-h-0 overflow-y-auto overflow-x-hidden mb-3">
+            <div className="w-full max-w-[1400px] flex-1 min-h-0 overflow-y-auto overflow-x-hidden mb-2">
             <div
               ref={pageRef}
-              className={`bg-white text-[#1a1a1a] shadow-lg rounded-sm w-full max-w-[1000px] p-10 font-serif leading-[1.9] text-[13px] min-h-[600px] relative transition-all duration-300 ${
+              className={`bg-white text-[#1a1a1a] shadow-lg rounded-sm w-full max-w-[1400px] p-6 font-serif leading-[1.7] text-[11px] min-h-[600px] relative transition-all duration-300 ${
                 editorMode === "editing"
                   ? "ring-2 ring-purple-400/40 shadow-[0_0_24px_rgba(168,85,247,0.12)]"
                   : ""
@@ -633,15 +633,15 @@ function ScenePageContent({ scene, charNames, editorMode, editPhase, showEditDon
 
 
       {/* Scene Heading */}
-      <div style={{ fontSize: 18, fontWeight: 700, color: "#b91c1c", marginBottom: 2, paddingBottom: 6, borderBottom: "1px solid #e5e5e5" }}>
+      <div style={{ fontSize: 15, fontWeight: 700, color: "#b91c1c", marginBottom: 1, paddingBottom: 4, borderBottom: "1px solid #e5e5e5" }}>
         <span>第{scene.scene_number}场  {scene.location}  —  {time}</span>
         {mode && mode !== "sequential" && (
-          <span style={{ fontSize: 13, color: "#999", marginLeft: 10, fontWeight: 400 }}>
+          <span style={{ fontSize: 11, color: "#999", marginLeft: 8, fontWeight: 400 }}>
             [{TIMELINE_LABELS[mode] || mode}]
           </span>
         )}
         {castNames.length > 0 && (
-          <span style={{ fontSize: 12, color: "#888", marginLeft: 12, fontWeight: 400 }}>
+          <span style={{ fontSize: 10, color: "#888", marginLeft: 10, fontWeight: 400 }}>
             出场: {castNames.join("、")}
           </span>
         )}
@@ -649,62 +649,62 @@ function ScenePageContent({ scene, charNames, editorMode, editPhase, showEditDon
 
       {/* Purpose / Summary */}
       {purpose && (
-        <div style={{ fontSize: 13, color: "#888", fontStyle: "italic", margin: "6px 0 16px 0", paddingLeft: 10, borderLeft: "3px solid #e5e5e5" }}>
+        <div style={{ fontSize: 11, color: "#888", fontStyle: "italic", margin: "4px 0 10px 0", paddingLeft: 8, borderLeft: "2px solid #e5e5e5" }}>
           {purpose}
         </div>
       )}
 
       {/* Beats or raw text */}
       {beats.length === 0 ? (
-        <div style={{ lineHeight: 2, color: "#888", fontStyle: "italic", whiteSpace: "pre-wrap", borderLeft: "2px solid #fcd34d", paddingLeft: 12 }}>
+        <div style={{ lineHeight: 1.7, color: "#888", fontStyle: "italic", whiteSpace: "pre-wrap", borderLeft: "2px solid #fcd34d", paddingLeft: 10 }}>
           {rawBlock || scene.summary || "暂无内容"}
         </div>
       ) : (
         beats.map((beat, bi) => (
           <div key={beat.beat_id || bi}>
             {(beat.captions || []).map((c, ci) => (
-              <div key={`c-${ci}`} style={{ textAlign: "center", fontWeight: 700, fontSize: 14, margin: "10px 0" }}>{c.content}</div>
+              <div key={`c-${ci}`} style={{ textAlign: "center", fontWeight: 700, fontSize: 12, margin: "6px 0" }}>{c.content}</div>
             ))}
             {(beat.flashbacks || []).length > 0 && (
-              <div style={{ textAlign: "right", fontWeight: 700, fontSize: 13, color: "#888", margin: "16px 0 8px" }}>FLASHBACK TO:</div>
+              <div style={{ textAlign: "right", fontWeight: 700, fontSize: 11, color: "#888", margin: "10px 0 6px" }}>FLASHBACK TO:</div>
             )}
             {(beat.actions || []).map((a, ai) => (
-              <p key={`a-${ai}`} style={{ lineHeight: 2, textAlign: "justify", margin: "6px 0" }}>
+              <p key={`a-${ai}`} style={{ lineHeight: 1.7, textAlign: "justify", margin: "4px 0" }}>
                 {a.character_id && <span style={{ color: "#b91c1c", fontWeight: 600 }}>[{a.character_id}] </span>}
                 {a.description}
               </p>
             ))}
             {(beat.dialogues || []).map((d, di) => (
-              <div key={`d-${di}`} style={{ margin: "12px 0", textAlign: "center" }}>
-                <div style={{ fontWeight: 700, fontSize: 14, marginBottom: 2 }}>
+              <div key={`d-${di}`} style={{ margin: "8px 0", textAlign: "center" }}>
+                <div style={{ fontWeight: 700, fontSize: 13, marginBottom: 1 }}>
                   {d.speaker_id || "?"}
-                  {d.emotion && <span style={{ fontSize: 12, color: "#888", fontStyle: "italic", marginLeft: 6 }}>({d.emotion})</span>}
+                  {d.emotion && <span style={{ fontSize: 10, color: "#888", fontStyle: "italic", marginLeft: 4 }}>({d.emotion})</span>}
                 </div>
-                <div style={{ margin: "0 60px", lineHeight: 1.9 }}>{d.line || "..."}</div>
-                {d.subtext && <div style={{ fontSize: 11, color: "#ccc", marginTop: 2 }}>[{d.subtext}]</div>}
+                <div style={{ margin: "0 40px", lineHeight: 1.6 }}>{d.line || "..."}</div>
+                {d.subtext && <div style={{ fontSize: 10, color: "#ccc", marginTop: 1 }}>[{d.subtext}]</div>}
               </div>
             ))}
             {(beat.voice_overs || []).map((v, vi) => (
-              <div key={`v-${vi}`} style={{ margin: "12px 0", textAlign: "center" }}>
-                <div style={{ fontWeight: 700, fontSize: 14 }}>{v.character_id || "?"} <span style={{ fontSize: 12, color: "#888", fontStyle: "italic" }}>(画外音)</span></div>
-                <div style={{ margin: "0 60px", color: "#666", fontStyle: "italic" }}>{v.content}</div>
+              <div key={`v-${vi}`} style={{ margin: "8px 0", textAlign: "center" }}>
+                <div style={{ fontWeight: 700, fontSize: 13 }}>{v.character_id || "?"} <span style={{ fontSize: 10, color: "#888", fontStyle: "italic" }}>(画外音)</span></div>
+                <div style={{ margin: "0 40px", color: "#666", fontStyle: "italic" }}>{v.content}</div>
               </div>
             ))}
             {(beat.inner_monologues || []).map((m, mi) => (
-              <div key={`m-${mi}`} style={{ margin: "12px 0", textAlign: "center" }}>
-                <div style={{ fontWeight: 700, fontSize: 14 }}>{m.character_id || "?"} <span style={{ fontSize: 12, color: "#888", fontStyle: "italic" }}>(内心独白)</span></div>
-                <div style={{ margin: "0 60px", fontStyle: "italic" }}>{m.content}</div>
+              <div key={`m-${mi}`} style={{ margin: "8px 0", textAlign: "center" }}>
+                <div style={{ fontWeight: 700, fontSize: 13 }}>{m.character_id || "?"} <span style={{ fontSize: 10, color: "#888", fontStyle: "italic" }}>(内心独白)</span></div>
+                <div style={{ margin: "0 40px", fontStyle: "italic" }}>{m.content}</div>
               </div>
             ))}
             {(beat.flashbacks || []).map((f, fi) => (
-              <div key={`f-${fi}`} style={{ fontStyle: "italic", color: "#888", paddingLeft: 16, borderLeft: "2px solid #ddd", margin: "8px 0" }}>{f.content}</div>
+              <div key={`f-${fi}`} style={{ fontStyle: "italic", color: "#888", paddingLeft: 12, borderLeft: "2px solid #ddd", margin: "6px 0" }}>{f.content}</div>
             ))}
           </div>
         ))
       )}
 
       {/* End Marker */}
-      <div style={{ textAlign: "center", color: "#ccc", marginTop: 32, fontSize: 16, letterSpacing: 8 }}>· · ·</div>
+      <div style={{ textAlign: "center", color: "#ccc", marginTop: 24, fontSize: 14, letterSpacing: 6 }}>· · ·</div>
     </div>
   );
 }
@@ -730,8 +730,8 @@ function DirectorPanel({ scene }: { scene: SceneUIModel }) {
     <div className="console-panel text-xs border-[--nuss-accent]/30">
       <button onClick={() => setExpanded(!expanded)} className="w-full flex items-center gap-1.5 px-3 py-2 text-left hover:bg-[--nuss-accent]/5 transition-colors cursor-pointer select-none">
         <span className={`text-[10px] transition-transform duration-200 ${expanded ? "rotate-90" : ""}`}>▶</span>
-        <span className="font-semibold text-[--nuss-accent] text-[11px]">Scene {scene.scene_number}</span>
-        <span className="text-[10px] text-[--nuss-muted] truncate flex-1">{scene.location}</span>
+        <span className="font-semibold text-[--nuss-accent] text-[11px]">第{scene.scene_number}场</span>
+        <span className="text-[10px] text-[--nuss-muted] truncate flex-1">· {scene.location}</span>
       </button>
       {expanded && (
         <div className="px-3 pb-3 space-y-2 animate-slide-up border-t border-[--nuss-border]/30 pt-2">

@@ -90,6 +90,7 @@ export default function WorkspacePage() {
 
         {activeTab === "scenes" && (
           <>
+            <SectionHeader icon="🎬" title="场景工作台" count={jobState.scenes.length} unit="场" />
             <SceneDistribution scenes={jobState.scenes} characters={jobState.characters} />
             <ScriptBreakdown scenes={jobState.scenes} characters={jobState.characters} />
             <SceneEditor scenes={jobState.scenes} reviewStatus={jobState.reviewStatus} title={jobState.novelTitle} />
@@ -97,15 +98,21 @@ export default function WorkspacePage() {
         )}
 
         {activeTab === "characters" && (
-          <CharacterGraph characters={jobState.characters} scenes={jobState.scenes} reviewStatus={jobState.reviewStatus} />
+          <>
+            <SectionHeader icon="👥" title="角色图谱" count={jobState.characters.length} unit="人" />
+            <CharacterGraph characters={jobState.characters} scenes={jobState.scenes} reviewStatus={jobState.reviewStatus} />
+          </>
         )}
 
         {activeTab === "screenplay" && (
-          <ScreenplayViewer
-            jobId={jobState.jobId} scenes={jobState.scenes}
-            reviewStatus={jobState.reviewStatus} screenplayRaw={jobState.screenplay}
-            characters={jobState.characters}
-          />
+          <>
+            <SectionHeader icon="📜" title="剧本查看器" />
+            <ScreenplayViewer
+              jobId={jobState.jobId} scenes={jobState.scenes}
+              reviewStatus={jobState.reviewStatus} screenplayRaw={jobState.screenplay}
+              characters={jobState.characters}
+            />
+          </>
         )}
       </div>
 
@@ -409,6 +416,36 @@ function HomePage({ onStart }: { onStart: () => void }) {
       <p className="text-[10px] text-[var(--nuss-dim-text)] mt-4 opacity-50">
         上传你的第一部小说，AI 将为你完成全流程改编
       </p>
+    </div>
+  );
+}
+
+// ═══════════════════════════════════════════════════
+// 共享 SectionHeader — 页面顶部标题栏
+// ═══════════════════════════════════════════════════
+
+function SectionHeader({ icon, title, count, unit }: {
+  icon: string; title: string; count?: number; unit?: string;
+}) {
+  return (
+    <div className="flex items-center gap-3 mb-2 animate-fade-in">
+      <span className="text-xl">{icon}</span>
+      <h2
+        className="text-base font-bold tracking-wide"
+        style={{
+          background: "linear-gradient(135deg, #A855F7, #00F0FF)",
+          WebkitBackgroundClip: "text",
+          WebkitTextFillColor: "transparent",
+        }}
+      >
+        {title}
+      </h2>
+      {count !== undefined && (
+        <span className="px-2 py-0.5 rounded-full text-[0.65rem] font-bold"
+          style={{ background: "rgba(0,240,255,0.1)", color: "var(--nuss-accent)" }}>
+          {count} {unit || ""}
+        </span>
+      )}
     </div>
   );
 }

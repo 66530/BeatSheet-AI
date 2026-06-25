@@ -46,7 +46,8 @@ export default function SceneEditor({ scenes, reviewStatus, title }: Props) {
 function SceneCard({ data, index, isExpanded, onToggle }: { data?: Partial<RichScene>; index: number; isExpanded: boolean; onToggle: () => void }) {
   const s = {
     scene_id: data?.scene_id ?? "SC_PENDING", scene_number: data?.scene_number ?? index + 1,
-    location: data?.location ?? "未知场景", time: (data as RichScene)?.time ?? data?.time_of_day ?? "日",
+    location: data?.location ?? "未知场景", time: data?.time_of_day ?? "日",
+    location_type: data?.location_type ?? "unknown",
     summary: data?.summary ?? "加载中...", timeline_mode: data?.timeline_mode ?? "sequential",
     beats: (data?.beats ?? []) as RichBeat[], character_ids: data?.character_ids ?? [], scene_score: data?.scene_score ?? 0,
     purpose: (data as RichScene)?.purpose ?? "", conflict_level: (data as RichScene)?.conflict_level ?? 0,
@@ -74,13 +75,43 @@ function SceneCard({ data, index, isExpanded, onToggle }: { data?: Partial<RichS
     <div className={`blank-safe-card cursor-pointer transition-all ${isExpanded ? "border-[--nuss-accent]/50 bg-[--nuss-accent]/5" : ""}`} onClick={onToggle}>
       {/* Header */}
       <div className="flex items-start gap-3">
-        <div className="w-10 h-10 rounded-lg bg-[--nuss-accent]/20 flex items-center justify-center shrink-0">
-          <span className="text-sm font-bold text-[--nuss-accent-glow]">{s.scene_number}</span>
+        <div
+          className="w-10 h-10 rounded-lg flex items-center justify-center shrink-0"
+          style={{
+            background: s.location_type === "indoor"
+              ? "rgba(59,130,246,0.2)" : s.location_type === "outdoor"
+              ? "rgba(34,197,94,0.2)" : "rgba(234,179,8,0.2)",
+          }}
+        >
+          <span className="text-sm font-bold"
+            style={{
+              color: s.location_type === "indoor"
+                ? "#60a5fa" : s.location_type === "outdoor"
+                ? "#4ade80" : "#facc15",
+            }}
+          >
+            {s.scene_number}
+          </span>
         </div>
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 flex-wrap">
-            <h4 className="text-sm font-semibold">{s.location}</h4>
-            <span className="text-[10px] text-[--nuss-muted]">{s.time}</span>
+            <h4 className="text-sm font-bold">
+              <span className="text-[--nuss-accent-glow]">第{s.scene_number}场</span>
+              <span className="mx-1.5 text-[--nuss-muted]">·</span>
+              <span>{s.location}</span>
+              <span className="mx-1.5 text-[--nuss-muted]">—</span>
+              <span className="text-[--nuss-muted]">{s.time}</span>
+            </h4>
+            {/* 室内/室外 badge */}
+            <span className={`text-[9px] px-1.5 py-0.5 rounded font-medium border ${
+              s.location_type === "indoor"
+                ? "bg-blue-500/15 text-blue-400 border-blue-500/20"
+                : s.location_type === "outdoor"
+                ? "bg-green-500/15 text-green-400 border-green-500/20"
+                : "bg-yellow-500/15 text-yellow-400 border-yellow-500/20"
+            }`}>
+              {s.location_type === "indoor" ? "内" : s.location_type === "outdoor" ? "外" : "未知"}
+            </span>
             <span className={`text-[10px] px-1.5 py-0.5 rounded ${modeColor[s.timeline_mode] || ""}`}>{modeLabel[s.timeline_mode] || s.timeline_mode}</span>
             {s.emotional_tone && s.emotional_tone !== "中性" && <span className="text-[10px] px-1.5 py-0.5 rounded bg-yellow-500/10 text-yellow-400">{s.emotional_tone}</span>}
             <span className={`text-[10px] ${conflictColor}`}>冲突 {Math.round(s.conflict_level * 100)}%</span>

@@ -48,8 +48,8 @@ export default function SceneDistribution({ scenes, characters }: Props) {
 
       {!collapsed && (
         <div className="mt-3 space-y-3 animate-slide-up">
-          {/* ── 第一行：室内/室外 + 白天/夜晚 ── */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+          {/* ── 第一行：室内/室外/未知 + 白天/夜晚 ── */}
+          <div className="grid grid-cols-3 md:grid-cols-5 gap-2">
             <StatCard
               icon="" label="室内" count={loc.indoor} unit="场"
               pct={loc.indoorRate} colorClass="bg-blue-500"
@@ -57,6 +57,10 @@ export default function SceneDistribution({ scenes, characters }: Props) {
             <StatCard
               icon="" label="室外" count={loc.outdoor} unit="场"
               pct={loc.outdoorRate} colorClass="bg-green-500"
+            />
+            <StatCard
+              icon="" label="未知" count={loc.unknown} unit="场"
+              pct={Math.round((loc.unknown / (scenes.length || 1)) * 100)} colorClass="bg-gray-400"
             />
             <StatCard
               icon="" label="白天" count={tm.day} unit="场"

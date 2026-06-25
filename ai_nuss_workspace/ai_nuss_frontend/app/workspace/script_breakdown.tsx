@@ -324,8 +324,7 @@ export default function ScriptBreakdown({ scenes, characters }: Props) {
             <table className="w-full text-[10px]">
               <thead>
                 <tr className="border-b border-[--nuss-border]/40 text-[--nuss-muted] text-[9px] uppercase tracking-widest sticky top-0 bg-[--nuss-bg]">
-                  <th className="text-left py-2 pr-2 w-7">场</th>
-                  <th className="text-left py-2 pr-3 min-w-[140px]">场景头</th>
+                  <th className="text-left py-2 pr-3 min-w-[160px]">场景</th>
                   <th className="text-right py-2 pr-2 w-12">页数</th>
                   <th className="text-left py-2 pr-3 min-w-[120px]">剧情摘要</th>
                   <th className="text-left py-2 pr-3 min-w-[90px]">主要角色</th>
@@ -356,14 +355,15 @@ export default function ScriptBreakdown({ scenes, characters }: Props) {
                           isExpanded ? "bg-[--nuss-accent]/5" : "hover:bg-[--nuss-surface]"
                         }`}
                       >
-                        <td className="py-1.5 pr-2 font-bold text-[--nuss-accent-glow] text-[11px]">{s.scene_number}</td>
                         <td className="py-1.5 pr-3 font-medium whitespace-nowrap">
+                          <span className="text-[--nuss-accent-glow] font-bold text-[11px]">第{s.scene_number}场</span>
+                          <span className="mx-1 text-[--nuss-muted]">·</span>
                           <span className={s.location_type === "indoor" ? "text-blue-400" : s.location_type === "outdoor" ? "text-green-400" : "text-yellow-400"}>
                             [{header.ioLabel}]
                           </span>{" "}
                           {header.mainLoc}
                           {header.subLoc && <span className="text-[--nuss-muted]"> · {header.subLoc}</span>}
-                          {" · "}
+                          <span className="mx-1 text-[--nuss-muted]">—</span>
                           <span className="text-[--nuss-muted]">{header.tod}</span>
                         </td>
                         <td className="py-1.5 pr-2 text-right font-mono text-[--nuss-muted]">{formatPageFraction(rs.estimated_pages)}</td>
@@ -383,7 +383,7 @@ export default function ScriptBreakdown({ scenes, characters }: Props) {
                       </tr>
                       {isExpanded && (
                         <tr className="border-b border-[--nuss-border]/10">
-                          <td colSpan={9} className="bg-[--nuss-accent]/3">
+                          <td colSpan={8} className="bg-[--nuss-accent]/3">
                             <ExpandedBreakdown scene={rs} />
                           </td>
                         </tr>
